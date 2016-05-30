@@ -1,5 +1,7 @@
 package FP;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 import MCDP.model.MCDPData;
 import MCDP.model.MCDPModel;
@@ -12,9 +14,12 @@ public class FlowerPollination
 	// Parametros de la metaheuristica
 	private int numberPoblation;
 	private int numberIteration;
+	private double delta;
+	private double switchProbability;
 	
 	private ArrayList<Solution> poblation;	// Un arreglo de soluciones
-	private Solution bestSolution;			// Mejor Soluci贸n
+	private Solution bestSolution,tempSolution;			// Mejor Solucion
+	int tempFitness=0;
 	
 	// Dataset (benchmark)
 	private MCDPData data;
@@ -24,7 +29,10 @@ public class FlowerPollination
 	private long numAcceptedMoves;
 	private long numRejectedMoves;
 	
-	public FlowerPollination(int numberPoblation, int numberIteration, MCDPData data)
+	Random rn;
+    double d;    
+	
+	public FlowerPollination(int numberPoblation, int numberIteration, MCDPData data, double delta, double switchProbability)
 	{
 		this.numberPoblation = numberPoblation;
 		this.numberIteration = numberIteration;
@@ -33,6 +41,8 @@ public class FlowerPollination
 		this.bestSolution = new Solution();
 		this.numAcceptedMoves = 0;
 		this.numRejectedMoves = 0;
+		this.delta = delta;
+		this.switchProbability = switchProbability;
 	}
 	
 	/**
@@ -53,22 +63,43 @@ public class FlowerPollination
 		// Metaheuristic cycle
 		System.out.println("\n>> Comenzar el ciclo de la metaheuristica");
 		int iteration = 0;
-		while (iteration < this.numberIteration)
-		{
-			System.out.println("\n>> Iteraci贸n n煤mero ("+(iteration+1)+")");
+		rn = new Random();
+		
+		while (iteration < this.numberIteration){
+			System.out.println("\n>> Iteraci髇 n鷐ero ("+(iteration+1)+")");
 			
-			// L铆nea 6 y 7 del documento word (lo hice junto)
-			generateNeighbourSolution();
-			//toConsolePoblation();
+			//generateNeighbourSolution();
 			
+			for (int i = 0; i < numberPoblation; i++){
+			    d = rn.nextDouble();     // random value in range 0.0 - 1.0
+				
+			    tempSolution = new Solution(poblation.get(i).getMachine_cell(),poblation.get(i).getPart_cell(),poblation.get(i).getFitness());
+			    
+				if(d<switchProbability){
+					generarMovimiento(1);
+				}else{
+					generarMovimiento(2);
+				}
+				
+				if (tempFitness < poblation.get(i).getFitness())
+				{
+					// Escoger una nueva mejor solucion
+					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
+					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
+					poblation.get(i).setFitness(tempFitness);
+				}
+			}
+					
 			chooseBestSolutionInPoblation();
 			toConsoleBestSolution();
 			iteration++;
 		}
 	}
 	
+	
+
 	/**
-	 * Esta funci贸n genera randomicamente las soluciones iniciales.
+	 * Esta funci髇 genera randomicamente las soluciones iniciales.
 	 * Generar poblacion aleatorea es EXPLORACION
 	 */
 	private void generateInitialPoblation()
@@ -113,10 +144,8 @@ public class FlowerPollination
 		}
 	}
 	
-	private void toConsolePoblation()
-	{
-		for (int i = 0; i < numberPoblation; i++)
-		{
+	private void toConsolePoblation(){
+		for (int i = 0; i < numberPoblation; i++){
 			System.out.println(">> Poblation > Solution ["+(i+1)+"]");
 			poblation.get(i).toConsoleMachineCell();
 			poblation.get(i).toConsolePartCell();
@@ -125,6 +154,176 @@ public class FlowerPollination
 		}
 	}
 	
+	private void generarMovimiento(int tipoMovimiento){
+		boolean constraintOK = false;
+		tempFitness=0;
+		
+		if(tipoMovimiento==1){
+			while (constraintOK == false){
+				tempSolution = generarPasoLevy(tempSolution);
+				// Check constraint
+				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
+						tempSolution.getMachine_cell(),
+						tempSolution.getPart_cell());
+				constraintOK = boctorModel.checkConstraint();
+				
+				if (constraintOK == true)
+				{
+					tempFitness = boctorModel.calculateFitness();
+					this.numAcceptedMoves++;
+					break;
+				}
+				else
+				{
+					this.numRejectedMoves++;
+				}
+			}
+		}else{
+			while (constraintOK == false){
+				tempSolution = generarPasoLocal(tempSolution);
+				// Check constraint
+				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
+						tempSolution.getMachine_cell(),
+						tempSolution.getPart_cell());
+				constraintOK = boctorModel.checkConstraint();
+				
+				if (constraintOK == true)
+				{
+					tempFitness = boctorModel.calculateFitness();
+					this.numAcceptedMoves++;
+					break;
+				}
+				else
+				{
+					this.numRejectedMoves++;
+				}
+			}
+		}
+	}
+	
+	private Solution generarPasoLevy(Solution tempSolution){
+		Vuelo_levy L= new Vuelo_levy();
+		double step_levy=L.levy_step(3/2,1);
+		double temp_machine_cell[][]=new double[data.M][data.C];
+	
+		for(int i=0;i<data.M;i++){
+			for(int j=0;j<data.C;j++){
+				temp_machine_cell[i][j]=tempSolution.getMachine_cell()[i][j];
+			}
+		}
+		
+		for(int i=0;i<data.M;i++){
+			for(int j=0;j<data.C;j++){
+				double resultado = temp_machine_cell[i][j]+step_levy*(bestSolution.getMachine_cell()[i][j]-temp_machine_cell[i][j]);
+				double discretizacion = VShaped.V4(resultado);
+				int binarizacion=(int) Math.round(discretizacion);
+				tempSolution.getMachine_cell()[i][j]=binarizacion;
+				//System.out.println("RESULTADO "+binarizacion);
+			}
+		}
+		
+	    // Posteriormente generamos manualmente la matriz PxC
+        for (int j = 0; j < data.P; j++) //Rellenar la matriz pieza脳celda de "0"
+        {
+            for (int k = 0; k < data.C; k++)
+            {
+            	tempSolution.getPart_cell()[j][k] = 0;
+            }
+        }
+
+        for (int j = 0; j < data.P; j++)
+        {
+            int[] tempPart = new int[data.M];
+            int[] cellCount = new int[data.C];
+
+            for (int k = 0; k < data.C; k++) {
+                for (int i = 0; i < data.M; i++)
+                {
+                    // Esto hace una multiplicaci贸n para revisar si: P(j) es subconjunto de C(k)
+                    tempPart[i] = tempSolution.getMachine_cell()[i][k] * data.A[i][j];
+                }
+                cellCount[k] = IntStream.of(tempPart).sum();
+            }
+            // Extraer el 铆ndice de la posici贸n con el n煤mero m谩s grande.
+            int maxIndex = 0;
+            for (int i = 1; i < cellCount.length; i++)
+            {
+                int newNumber = cellCount[i];
+                if ((newNumber > cellCount[maxIndex]))
+                {
+                    maxIndex = i;
+                }
+            }
+            // Puts un 1 in the new cell
+            tempSolution.getPart_cell()[j][maxIndex] = 1;
+        }
+        
+		return tempSolution;
+	}
+	
+	private Solution generarPasoLocal(Solution tempSolution) {
+		double epsilon;
+		int randomPoblationK,randomPoblationJ;
+		randomPoblationK = rn.nextInt(numberPoblation - 0 + 1);
+		randomPoblationJ = rn.nextInt(numberPoblation - 0 + 1);
+		epsilon = rn.nextDouble(); 
+		
+		double temp_machine_cell[][]=new double[data.M][data.C];
+	
+		for(int i=0;i<data.M;i++){
+			for(int j=0;j<data.C;j++){
+				temp_machine_cell[i][j]=tempSolution.getMachine_cell()[i][j];
+			}
+		}
+		
+		for(int i=0;i<data.M;i++){
+			for(int j=0;j<data.C;j++){
+				double resultado = temp_machine_cell[i][j]+epsilon*(poblation.get(randomPoblationJ).getMachine_cell()[i][j]-poblation.get(randomPoblationK).getMachine_cell()[i][j]);
+				double discretizacion = VShaped.V4(resultado);
+				int binarizacion=(int) Math.round(discretizacion);
+				tempSolution.getMachine_cell()[i][j]=binarizacion;
+				//System.out.println("RESULTADO "+binarizacion);
+			}
+		}
+		
+	    // Posteriormente generamos manualmente la matriz PxC
+        for (int j = 0; j < data.P; j++) //Rellenar la matriz pieza脳celda de "0"
+        {
+            for (int k = 0; k < data.C; k++)
+            {
+            	tempSolution.getPart_cell()[j][k] = 0;
+            }
+        }
+
+        for (int j = 0; j < data.P; j++)
+        {
+            int[] tempPart = new int[data.M];
+            int[] cellCount = new int[data.C];
+
+            for (int k = 0; k < data.C; k++) {
+                for (int i = 0; i < data.M; i++)
+                {
+                    // Esto hace una multiplicaci贸n para revisar si: P(j) es subconjunto de C(k)
+                    tempPart[i] = tempSolution.getMachine_cell()[i][k] * data.A[i][j];
+                }
+                cellCount[k] = IntStream.of(tempPart).sum();
+            }
+            // Extraer el 铆ndice de la posici贸n con el n煤mero m谩s grande.
+            int maxIndex = 0;
+            for (int i = 1; i < cellCount.length; i++)
+            {
+                int newNumber = cellCount[i];
+                if ((newNumber > cellCount[maxIndex]))
+                {
+                    maxIndex = i;
+                }
+            }
+            // Puts un 1 in the new cell
+            tempSolution.getPart_cell()[j][maxIndex] = 1;
+        }
+        
+		return tempSolution;
+	}
 	/**
 	 * Genera una soluci贸n vecina (S') para soluci贸n de la poblaci贸n (S) y escoge entre la soluci贸n (S y S') cual
 	 * es la mejor y la reemplaza en el arreglo poblaci贸n.

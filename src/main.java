@@ -39,7 +39,7 @@ public class main {
 		MCDPData data = new MCDPData();
 		
 		// Crear la metaheuristica
-		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data);
+		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data, 3/2);
 		
 		// Ejecutar la metaheuristica
 		metaheuristic.run();
