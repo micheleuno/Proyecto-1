@@ -24,6 +24,8 @@ public class MCDPModel
 		this.part_cell = part_cell;
 	}
 	
+
+
 	/**
 	 * 
 	 * @return true si esta correta la restriccion, en caso contrario retorna falso.

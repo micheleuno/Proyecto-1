@@ -19,6 +19,7 @@ public class PropertiesRead
 	{		 
 		Properties prop = new Properties();
 		String propFileName = fileName;
+	
 		Hashtable<String,String> hashTable = new Hashtable<String,String>();
  
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);

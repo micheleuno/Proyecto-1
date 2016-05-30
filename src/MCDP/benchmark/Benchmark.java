@@ -2,7 +2,6 @@ package MCDP.benchmark;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,8 +11,9 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import MCDP.model.ModelIntMCDP;
-import MCDP.util.Convert;
+import MCDP.model.MCDPModel;
+//import MCDP.model.ModelIntMCDP;
+
 
 public class Benchmark
 {
@@ -36,16 +36,16 @@ public class Benchmark
 	}
 	
 	// leo a traves de un listado de nombres de archivo, los modelos con datos.
-	public ArrayList<ModelIntMCDP> getSetModelsByNames(ArrayList<String> filenames) throws IOException
+	public ArrayList<MCDPModel> getSetModelsByNames(ArrayList<String> filenames) throws IOException
 	{
-		ArrayList<ModelIntMCDP> models = new ArrayList<ModelIntMCDP>();
+		ArrayList<MCDPModel> models = new ArrayList<MCDPModel>();
 		Iterator<String> nombreIterator = filenames.iterator();
 
 		while (nombreIterator.hasNext())
 		{
-			String filename = nombreIterator.next();
+			String filename = nombreIterator.next();			
 			Hashtable<String,String> hashTable = new Hashtable<String,String>();
-
+			
 			PropertiesRead p = new PropertiesRead();
 			hashTable = p.getPropEssentialValues(filename);
 
@@ -61,7 +61,7 @@ public class Benchmark
 			int A[][] = convert.StringToMatrixInt(string, M, P);
 
 			// Set values into model.
-			ModelIntMCDP model = new ModelIntMCDP(M, P, C, Mmax, Sum, A);
+		MCDPModel model = new MCDPModel(A, M, P, C, Mmax, A,A);
 
 			// Set identificator Model (KEY).
 			int pos = filename.lastIndexOf(".");
@@ -69,7 +69,7 @@ public class Benchmark
 			{
 				filename = filename.substring(0, pos);
 			}
-			model.setIdentificator(filename);
+			//model.setIdentificator(filename);
 
 			// Add model into model set.
 			models.add(model);		
