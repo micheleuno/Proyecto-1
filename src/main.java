@@ -29,17 +29,11 @@ public class main {
 		
 		
 		
-		
-		
-		
-		
-		
-		
 		// Crear parametros del benchmark del modelo de boctor
 		MCDPData data = new MCDPData();
 		
 		// Crear la metaheuristica
-		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data, 3/2);
+		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data, 3/2,1);
 		
 		// Ejecutar la metaheuristica
 		metaheuristic.run();
