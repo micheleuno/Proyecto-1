@@ -7,7 +7,7 @@ import MCDP.model.MCDPNeighbourSolution;
 import MCDP.model.MCDPRandomSolution;
 import MCDP.model.Solution;
 
-public class Metaheuristic
+public class FlowerPollination
 {
 	// Parametros de la metaheuristica
 	private int numberPoblation;
@@ -24,7 +24,7 @@ public class Metaheuristic
 	private long numAcceptedMoves;
 	private long numRejectedMoves;
 	
-	public Metaheuristic(int numberPoblation, int numberIteration, MCDPData data)
+	public FlowerPollination(int numberPoblation, int numberIteration, MCDPData data)
 	{
 		this.numberPoblation = numberPoblation;
 		this.numberIteration = numberIteration;

@@ -1,4 +1,4 @@
-import FP.Metaheuristic;
+import FP.FlowerPollination;
 import MCDP.model.MCDPData;
 
 public class main {
@@ -13,7 +13,7 @@ public class main {
 		MCDPData data = new MCDPData();
 		
 		// Crear la metaheuristica
-		Metaheuristic metaheuristic = new Metaheuristic(numberPoblation, numberIteration, data);
+		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data);
 		
 		// Ejecutar la metaheuristica
 		metaheuristic.run();
