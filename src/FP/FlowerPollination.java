@@ -212,7 +212,8 @@ public class FlowerPollination {
 
 	private Solution generarPasoLevy(Solution tempSolution) {
 		Vuelo_levy L = new Vuelo_levy();
-		double step_levy;
+		double step_levy,resultado,discretizacion;
+		int binarizacion;
 		do {
 			step_levy = L.levy_step(1.5, 1);
 		} while (Double.isNaN(step_levy));
@@ -227,10 +228,10 @@ public class FlowerPollination {
 
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
-				double resultado = temp_machine_cell[i][j]
+				resultado = temp_machine_cell[i][j]
 						+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);
-				double discretizacion = VShaped.V2((float) resultado);
-				int binarizacion = binarizacion(discretizacion);
+				discretizacion = VShaped.V2((float)resultado);
+				binarizacion = binarizacion(discretizacion);
 				tempSolution.getMachine_cell()[i][j] = binarizacion;
 				// System.out.println("RESULTADO "+binarizacion);
 			}
@@ -273,8 +274,8 @@ public class FlowerPollination {
 	}
 
 	private Solution generarPasoLocal(Solution tempSolution) {
-		double epsilon;
-		int randomPoblationK, randomPoblationJ;
+		double epsilon,resultado,discretizacion;
+		int randomPoblationK, randomPoblationJ,binarizacion;
 		randomPoblationK = rn.nextInt((numberPoblation - 1) - 0 + 1);
 		randomPoblationJ = rn.nextInt((numberPoblation - 1) - 0 + 1);
 		epsilon = rn.nextDouble();
@@ -289,11 +290,11 @@ public class FlowerPollination {
 
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
-				double resultado = temp_machine_cell[i][j]
+				resultado = temp_machine_cell[i][j]
 						+ epsilon * (poblation.get(randomPoblationJ).getMachine_cell()[i][j]
 								- poblation.get(randomPoblationK).getMachine_cell()[i][j]);
-				double discretizacion = VShaped.V2((float) resultado);
-				int binarizacion = binarizacion(discretizacion);
+				discretizacion = VShaped.V2((float)resultado);
+				binarizacion = binarizacion(discretizacion);
 				tempSolution.getMachine_cell()[i][j] = binarizacion;
 				// System.out.println("RESULTADO "+binarizacion);
 			}
@@ -336,11 +337,12 @@ public class FlowerPollination {
 	}
 
 	public int binarizacion(double numDiscreto) {
-		double random = rn.nextDouble();
-		if (random < numDiscreto) {
+		/*double random = rn.nextDouble();
+		if (random <= numDiscreto) {
 			return 1;
 		}
-		return 0;
+		return 0;*/
+		return Math.round((float)numDiscreto);
 	}
 
 	/**
