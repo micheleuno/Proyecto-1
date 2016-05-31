@@ -15,7 +15,7 @@ public class FlowerPollination
 	private int numberPoblation;
 	private int numberIteration;
 	private double delta;
-	private double switchProbability;
+	private double switchProbability=8/10;
 	
 	private ArrayList<Solution> poblation;	// Un arreglo de soluciones
 	private Solution bestSolution,tempSolution;			// Mejor Solucion
@@ -83,6 +83,7 @@ public class FlowerPollination
 				
 				if (tempFitness < poblation.get(i).getFitness())
 				{
+					System.out.println("Fitness solucion creada levy "+ tempFitness +" fitness solucion actual "+ poblation.get(i).getFitness()  );
 					// Escoger una nueva mejor solucion
 					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());

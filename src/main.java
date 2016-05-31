@@ -14,9 +14,9 @@ public class main {
 	{
 		// Crear parametros iniciales de la metaheuristica
 		int numberPoblation = 25;
-		int numberIteration = 500;
+		int numberIteration = 10;
 		
-		Logger log = Logger.getLogger(main.class);
+		/*Logger log = Logger.getLogger(main.class);
 		
 		log.info("Read all filenames");
 		Benchmark benchmark = new Benchmark();
@@ -24,7 +24,7 @@ public class main {
 		
 		ArrayList<MCDPModel> modelSet = benchmark.getSetModelsByNames(dataFiles);	
 		System.out.println("Read all filenames");
-		
+		*/
 		
 		
 		
