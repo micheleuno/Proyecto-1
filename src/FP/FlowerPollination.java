@@ -1,6 +1,7 @@
 package FP;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 import MCDP.model.MCDPData;
@@ -15,7 +16,7 @@ public class FlowerPollination
 	private int numberPoblation;
 	private int numberIteration;
 	private double delta;
-	private double switchProbability=8/10;
+	private double switchProbability;
 	
 	private ArrayList<Solution> poblation;	// Un arreglo de soluciones
 	private Solution bestSolution,tempSolution;			// Mejor Solucion
@@ -166,20 +167,35 @@ public class FlowerPollination
 				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
 						tempSolution.getMachine_cell(),
 						tempSolution.getPart_cell());
+				
+				
+				for(int k=0;k<data.M;k++){
+					for(int l=0;l<data.C;l++){
+						System.out.print("["+tempSolution.getMachine_cell()[k][l]+"]");
+					}
+					System.out.println();
+				}
+				toConsoleBestSolution();
+				Scanner nc = new Scanner(System.in);
+				nc.nextLine();
+				
 				constraintOK = boctorModel.checkConstraint();
 				
 				if (constraintOK == true)
 				{
+					System.out.println("ACEPTADA");
 					tempFitness = boctorModel.calculateFitness();
 					this.numAcceptedMoves++;
 					break;
 				}
 				else
 				{
+					System.out.println("RECHAZADA");
 					this.numRejectedMoves++;
 				}
 			}
-		}else{
+		}
+		if(tipoMovimiento==2){
 			while (constraintOK == false){
 				tempSolution = generarPasoLocal(tempSolution);
 				// Check constraint
@@ -187,6 +203,16 @@ public class FlowerPollination
 						tempSolution.getMachine_cell(),
 						tempSolution.getPart_cell());
 				constraintOK = boctorModel.checkConstraint();
+				
+				for(int k=0;k<data.M;k++){
+					for(int l=0;l<data.C;l++){
+						System.out.print("["+tempSolution.getMachine_cell()[k][l]+"]");
+					}
+					System.out.println();
+				}
+				toConsoleBestSolution();
+				Scanner nc = new Scanner(System.in);
+				nc.nextLine();
 				
 				if (constraintOK == true)
 				{
@@ -204,7 +230,11 @@ public class FlowerPollination
 	
 	private Solution generarPasoLevy(Solution tempSolution){
 		Vuelo_levy L= new Vuelo_levy();
-		double step_levy=L.levy_step(3/2,1);
+		double step_levy;
+		do{
+			step_levy=L.levy_step(1.5,1);
+		}while(Double.isNaN(step_levy));
+		
 		double temp_machine_cell[][]=new double[data.M][data.C];
 	
 		for(int i=0;i<data.M;i++){
@@ -265,8 +295,8 @@ public class FlowerPollination
 	private Solution generarPasoLocal(Solution tempSolution) {
 		double epsilon;
 		int randomPoblationK,randomPoblationJ;
-		randomPoblationK = rn.nextInt(numberPoblation - 0 + 1);
-		randomPoblationJ = rn.nextInt(numberPoblation - 0 + 1);
+		randomPoblationK = rn.nextInt((numberPoblation-1) - 0 + 1);
+		randomPoblationJ = rn.nextInt((numberPoblation-1) - 0 + 1);
 		epsilon = rn.nextDouble(); 
 		
 		double temp_machine_cell[][]=new double[data.M][data.C];
