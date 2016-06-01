@@ -201,9 +201,11 @@ public class FlowerPollination {
 
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
+					System.out.println("ACEPTAR");
 					this.numAcceptedMoves++;
 					break;
 				} else {
+					System.out.println("RECHAZADA");
 					this.numRejectedMoves++;
 				}
 			}
