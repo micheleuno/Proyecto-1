@@ -54,11 +54,11 @@ public class FlowerPollination {
 		// Generate initial poblation
 		System.out.println(">> Generar poblacion inicial\n");
 		generateInitialPoblation();
-		toConsolePoblation();
+		//toConsolePoblation();
 
 		// Choose best solution in poblation
 		chooseBestSolutionInPoblation();
-		toConsoleBestSolution();
+	//	toConsoleBestSolution();
 
 		// Metaheuristic cycle
 		System.out.println("\n>> Comenzar el ciclo de la metaheuristica");
@@ -67,24 +67,26 @@ public class FlowerPollination {
 
 		while (iteration < this.numberIteration) {
 			System.out.println("\n>> Iteración número (" + (iteration + 1) + ")");
-
+			toConsoleBestSolution();
+			
 			// generateNeighbourSolution();
 
 			for (int i = 0; i < numberPoblation; i++) {
+				toConsoleSingleSolutio(i);
 				d = rn.nextDouble(); // random value in range 0.0 - 1.0
 
 				tempSolution = new Solution(poblation.get(i).getMachine_cell(), poblation.get(i).getPart_cell(),
 						poblation.get(i).getFitness());
 
 				if (d < switchProbability) {
-					generarMovimiento(1);
+					generarMovimiento(1,i);
 				} else {
-					generarMovimiento(2);
+					generarMovimiento(2,i);
 				}
 
 				if (tempFitness < poblation.get(i).getFitness()) {
-					System.out.println("Fitness solucion creada levy " + tempFitness + " fitness solucion actual "
-							+ poblation.get(i).getFitness());
+					//System.out.println("Fitness solucion creada levy " + tempFitness + " fitness solucion actual "
+						//	+ poblation.get(i).getFitness());
 					// Escoger una nueva mejor solucion
 					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
@@ -93,8 +95,9 @@ public class FlowerPollination {
 			}
 
 			chooseBestSolutionInPoblation();
-			toConsoleBestSolution();
+			//toConsoleBestSolution();
 			iteration++;
+			
 		}
 	}
 
@@ -148,8 +151,17 @@ public class FlowerPollination {
 			System.out.println("");
 		}
 	}
+	private void toConsoleSingleSolutio(int i) {
+		
+			System.out.println(i +"Poblacion del vector soluciones");
+			poblation.get(i).toConsoleMachineCell();
+			poblation.get(i).toConsolePartCell();
+			poblation.get(i).toConsoleFitness();
+			System.out.println("");
+		
+	}
 
-	private void generarMovimiento(int tipoMovimiento) {
+	private void generarMovimiento(int tipoMovimiento,int poblacion) {
 		boolean constraintOK = false;
 		tempFitness = 0;
 
@@ -165,19 +177,20 @@ public class FlowerPollination {
 				 * System.out.print("["+tempSolution.getMachine_cell()[k][l]+"]"
 				 * ); } System.out.println(); }
 				 */
-				toConsoleBestSolution();
-				Scanner nc = new Scanner(System.in);
+				//toConsoleBestSolution();
+				
 				// nc.nextLine();
 
 				constraintOK = boctorModel.checkConstraint();
 
 				if (constraintOK == true) {
-					System.out.println("ACEPTADA");
+					//System.out.println("ACEPTADA");
 					tempFitness = boctorModel.calculateFitness();
 					this.numAcceptedMoves++;
 					break;
 				} else {
-					System.out.println("RECHAZADA");
+					tempSolution=poblation.get(poblacion);
+					//System.out.println("RECHAZADA");
 					this.numRejectedMoves++;
 				}
 			}
@@ -195,7 +208,7 @@ public class FlowerPollination {
 				 * System.out.print("["+tempSolution.getMachine_cell()[k][l]+"]"
 				 * ); } System.out.println(); }
 				 */
-				toConsoleBestSolution();
+				//toConsoleBestSolution();
 				Scanner nc = new Scanner(System.in);
 				// nc.nextLine();
 
@@ -204,6 +217,7 @@ public class FlowerPollination {
 					this.numAcceptedMoves++;
 					break;
 				} else {
+					tempSolution=poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
 			}
@@ -228,14 +242,26 @@ public class FlowerPollination {
 
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
-				resultado = temp_machine_cell[i][j]
-						+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);
+				resultado = temp_machine_cell[i][j]	+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);
 				discretizacion = VShaped.V2((float)resultado);
 				binarizacion = binarizacion(discretizacion);
 				tempSolution.getMachine_cell()[i][j] = binarizacion;
 				// System.out.println("RESULTADO "+binarizacion);
 			}
 		}
+		System.out.print(" Matriz de solucion ");
+		for (int i = 0; i < data.M; i++) {	
+			System.out.print("[");
+				for (int j = 0; j < data.C; j++) {
+					
+					System.out.print(  tempSolution.getMachine_cell()[i][j]+" " );
+				}
+				System.out.print("]");
+				
+			
+		}
+		
+		
 
 		// Posteriormente generamos manualmente la matriz PxC
 		for (int j = 0; j < data.P; j++) // Rellenar la matriz piezaÃ—celda de
@@ -407,11 +433,13 @@ public class FlowerPollination {
 	}
 
 	private void toConsoleBestSolution() {
-		System.out.println(">> Mejor soluciÃ³n");
+		System.out.println(">> Mejor solucion");
 		bestSolution.toConsoleMachineCell();
 		bestSolution.toConsolePartCell();
 		bestSolution.toConsoleFitness();
 	}
+	
+	
 
 	public void toConsoleFinalReport() {
 		System.out.println("===============================");
@@ -423,7 +451,7 @@ public class FlowerPollination {
 				this.bestSolution.getMachine_cell(), this.bestSolution.getPart_cell());
 		boctorModel.convertToFinalMatrix();
 
-		for (int i = 0; i < data.M; i++) {
+		/*for (int i = 0; i < data.M; i++) {
 			for (int a = 0; a < numberPoblation; a++) {
 				for (int j = 0; j < data.C; j++) {
 					System.out.print("[" + poblation.get(a).getMachine_cell()[i][j] + "]");
@@ -431,6 +459,6 @@ public class FlowerPollination {
 				System.out.print(" || ");
 			}
 			System.out.println();
-		}
+		}*/
 	}
 }
