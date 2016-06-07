@@ -14,7 +14,7 @@ public class main {
 	{
 		// Crear parametros iniciales de la metaheuristica
 		int numberPoblation = 25;
-		int numberIteration = 1;
+		int numberIteration = 5000;
 		
 		/*Logger log = Logger.getLogger(main.class);
 		

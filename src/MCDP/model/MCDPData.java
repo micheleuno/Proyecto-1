@@ -54,6 +54,35 @@ public class MCDPData
 			{0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0},
 			{0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0}
 	};
-	
+	public int getM() {
+		return M;
+	}
+	public void setM(int m) {
+		M = m;
+	}
+	public int getP() {
+		return P;
+	}
+	public void setP(int p) {
+		P = p;
+	}
+	public int getC() {
+		return C;
+	}
+	public void setC(int c) {
+		C = c;
+	}
+	public int getMmax() {
+		return mmax;
+	}
+	public void setMmax(int mmax) {
+		this.mmax = mmax;
+	}
+	public int[][] getA() {
+		return A;
+	}
+	public void setA(int[][] a) {
+		A = a;
+	}
 
 }
