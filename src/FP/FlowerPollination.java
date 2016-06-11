@@ -66,7 +66,7 @@ public class FlowerPollination {
 
 		while (iteration < this.numberIteration) {
 			System.out.println("\n>> Iteración número (" + (iteration + 1) + ")");
-			toConsolePoblation();
+			//toConsolePoblation();
 			toConsoleBestSolution();
 
 			for (int i = 0; i < numberPoblation; i++) {
@@ -83,7 +83,7 @@ public class FlowerPollination {
 				}
 
 				if (tempFitness < poblation.get(i).getFitness()) {
-					System.out.println("tempFitness: "+tempFitness+"||"+"["+i+"]"+"poblacionFitness: "+poblation.get(i).getFitness());
+					//System.out.println("tempFitness: "+tempFitness+"||"+"["+i+"]"+"poblacionFitness: "+poblation.get(i).getFitness());
 					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
 					poblation.get(i).setFitness(tempFitness);
@@ -191,7 +191,7 @@ public class FlowerPollination {
 				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
 						tempSolution.getMachine_cell(), tempSolution.getPart_cell());
 
-			//	System.out.println("Solucion generada por levy");
+				//System.out.println("Solucion generada por levy");
 /*				for (int k = 0; k < data.M; k++) {
 					for (int l = 0; l < data.C; l++) {
 						System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
@@ -212,7 +212,7 @@ public class FlowerPollination {
 					//nc.nextLine();
 					break;
 				} else {
-					System.out.println("RECHAZADA mov 1");
+					//System.out.println("RECHAZADA mov 1");
 					//constraintOK = repararSolucion();
 					/*
 					System.out.println(constraintOK);
@@ -244,7 +244,7 @@ public class FlowerPollination {
 						tempSolution.getMachine_cell(), tempSolution.getPart_cell());
 				constraintOK = boctorModel.checkConstraint();
 
-				System.out.println("Solucion generada localmente");
+				//System.out.println("Solucion generada localmente");
 /*				for (int k = 0; k < data.M; k++) {
 					for (int l = 0; l < data.C; l++) {
 						System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
@@ -258,12 +258,12 @@ public class FlowerPollination {
 
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
-					System.out.println("ACEPTADA FITNESS: "+tempFitness);
+					//System.out.println("ACEPTADA FITNESS: "+tempFitness);
 					this.numAcceptedMoves++;
 					//nc.nextLine();
 					break;
 				} else {			
-					System.out.println("RECHAZADA mov 2");
+					//System.out.println("RECHAZADA mov 2");
 					//constraintOK = repararSolucion();
 					/*System.out.println("RECHAZADA");
 					System.out.println(constraintOK);
@@ -643,6 +643,7 @@ public class FlowerPollination {
 	}
 
 	public double subtraction(Solution solution1, Solution solution2) {
+		//System.out.println("Subtraccion");
 		// Realizar la resta de g* - xi(t)
 		// g* = MxC, PxC
 		// xi(t) = MxC, PxC
@@ -678,6 +679,7 @@ public class FlowerPollination {
 	}
 
 	public Solution addition(Solution solution, double value) {
+		//System.out.println("Adicion");
 		// Realizar el cambio de maquina n veces, n = value, value = levy *
 		// valor de la resta;
 		int[][] machine_cell = new int[data.getM()][data.getC()];
@@ -695,7 +697,12 @@ public class FlowerPollination {
 			System.arraycopy(original_machine_cell[i], 0, machine_cell[i], 0, data.getC());
 		}
 		int times = 0;
-		while (times < value) {// Random machine
+		int val = (int) value;
+		if(val>500000){
+			val=500000;
+		}
+		while (times < val) {// Random machine
+			//System.out.println("times: "+times+" val: "+val+" value: "+value);
 			Random rm = new Random();
 			int randomMachine = rm.nextInt(machines - 0) + 0; // Clear row
 			for (int k = 0; k < cells; k++) {
