@@ -13,8 +13,8 @@ public class main {
 	public static void main(String[] args) throws Exception
 	{
 		// Crear parametros iniciales de la metaheuristica
-		int numberPoblation = 25;
-		int numberIteration = 5000;
+		int numberPoblation = 5;
+		int numberIteration = 500;
 		
 		/*Logger log = Logger.getLogger(main.class);
 		

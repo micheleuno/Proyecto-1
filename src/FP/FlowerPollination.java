@@ -92,7 +92,7 @@ public class FlowerPollination {
 
 			chooseBestSolutionInPoblation();
 			iteration++;
-			sc.nextLine();
+			//sc.nextLine();
 		}
 	}
 
@@ -191,7 +191,7 @@ public class FlowerPollination {
 				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
 						tempSolution.getMachine_cell(), tempSolution.getPart_cell());
 
-				System.out.println("Solucion generada por levy");
+			//	System.out.println("Solucion generada por levy");
 /*				for (int k = 0; k < data.M; k++) {
 					for (int l = 0; l < data.C; l++) {
 						System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
@@ -207,13 +207,14 @@ public class FlowerPollination {
 
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
-					System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
+					//System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
 					this.numAcceptedMoves++;
 					//nc.nextLine();
 					break;
 				} else {
+					System.out.println("RECHAZADA mov 1");
 					//constraintOK = repararSolucion();
-					/*System.out.println("RECHAZADA");
+					/*
 					System.out.println(constraintOK);
 					System.out.println("SOLUCION REPARADA");
 					for (int k = 0; k < data.M; k++) {
@@ -261,7 +262,8 @@ public class FlowerPollination {
 					this.numAcceptedMoves++;
 					//nc.nextLine();
 					break;
-				} else {					
+				} else {			
+					System.out.println("RECHAZADA mov 2");
 					//constraintOK = repararSolucion();
 					/*System.out.println("RECHAZADA");
 					System.out.println(constraintOK);
@@ -564,16 +566,53 @@ public class FlowerPollination {
 
 	private void chooseBestSolutionInPoblation() {
 		// Escoger temporalmente el primer elemento como la mejor solucion.
+		double [][] maquina_celda = new double[data.M][data.C];
+		double [][] parte_celda = new double[data.P][data.C];
+		
+	
+		
+		
 		bestSolution.setMachine_cell(poblation.get(0).getMachine_cell());
 		bestSolution.setPart_cell(poblation.get(0).getPart_cell());
 		bestSolution.setFitness(poblation.get(0).getFitness());
-
+		
+		
+		  for (int i = 0; i < data.M; i++){
+	        	for(int j = 0; j < data.C; j++){
+	        		maquina_celda[i][j]=poblation.get(0).getMachine_cell()[i][j];        		
+	        	}
+	        }
+		  
+		  for (int i = 0; i < data.P; i++)
+	        {
+	        	for(int j = 0; j <data.C; j++){
+	        		parte_celda[i][j]=poblation.get(0).getPart_cell()[i][j];
+	        	}
+	        }
+		  
+		  bestSolution.setDoubleMachine_cell(maquina_celda);
+		  bestSolution.setDoublePart_cell(parte_celda);
+		
+		  
 		for (int i = 1; i < numberPoblation; i++) {
 			if (poblation.get(i).getFitness() < bestSolution.getFitness()) {
 				// Escoger una nueva mejor solucion
 				bestSolution.setMachine_cell(poblation.get(i).getMachine_cell());
 				bestSolution.setPart_cell(poblation.get(i).getPart_cell());
 				bestSolution.setFitness(poblation.get(i).getFitness());
+			  for (int k = 0; k < data.M; k++){
+		        	for(int j = 0; j < data.C; j++){
+		        		maquina_celda[k][j]=poblation.get(i).getMachine_cell()[k][j];        		
+		        	}
+		        }				  
+			  for (int k = 0; k < data.P; k++)
+		        {
+		        	for(int j = 0; j < data.C; j++){
+		        		parte_celda[k][j]=poblation.get(i).getPart_cell()[k][j];
+		        	}
+		        }
+			  bestSolution.setDoubleMachine_cell(maquina_celda);
+			  bestSolution.setDoublePart_cell(parte_celda);
 			}
 		}
 	}
@@ -614,7 +653,6 @@ public class FlowerPollination {
 		// h(PxC) = g*(PxC) - xi(PxC)
 		double[][] temp_gMxC = solution1.getDoubleMachine_cell();
 		double[][] temp_gPxC = solution1.getDoublePart_cell();
-		//System.out.println(temp_gMxC.toString());
 		double[][] temp_xiMxC = solution2.getDoubleMachine_cell();
 		double[][] temp_xiPxC = solution2.getDoublePart_cell();
 		RealMatrix gPxC = new Array2DRowRealMatrix(temp_gPxC);
