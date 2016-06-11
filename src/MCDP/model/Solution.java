@@ -28,7 +28,7 @@ public class Solution
         }
         for (int i = 0; i < machine_cell.length; i++){
         	for(int j = 0; j < machine_cell[i].length; j++){
-        		this.doubleMachine_cell[i][j]=machine_cell[i][j];
+        		this.doubleMachine_cell[i][j]=machine_cell[i][j];        		
         	}
         }
         for (int i = 0; i < part_cell.length; i++)

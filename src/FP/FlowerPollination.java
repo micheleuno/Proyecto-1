@@ -212,7 +212,7 @@ public class FlowerPollination {
 					//nc.nextLine();
 					break;
 				} else {
-					constraintOK = repararSolucion();
+					//constraintOK = repararSolucion();
 					/*System.out.println("RECHAZADA");
 					System.out.println(constraintOK);
 					System.out.println("SOLUCION REPARADA");
@@ -221,14 +221,15 @@ public class FlowerPollination {
 							System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
 						}
 						System.out.println();
-					}*/
-					if (constraintOK == false) {
+					}*/					
+					/*if (constraintOK == false) {
 						tempSolution = poblation.get(poblacion);
 					}else{
 						tempFitness = boctorModel.calculateFitness();
 						break;
-					}
+					}*/
 					// System.out.println("RECHAZADA");
+					tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
 				//nc.nextLine();
@@ -260,8 +261,8 @@ public class FlowerPollination {
 					this.numAcceptedMoves++;
 					//nc.nextLine();
 					break;
-				} else {
-					constraintOK = repararSolucion();
+				} else {					
+					//constraintOK = repararSolucion();
 					/*System.out.println("RECHAZADA");
 					System.out.println(constraintOK);
 					System.out.println("SOLUCION REPARADA");
@@ -271,12 +272,13 @@ public class FlowerPollination {
 						}
 						System.out.println();
 					}*/
-					if (constraintOK == false) {
+					/*if (constraintOK == false) {
 						tempSolution = poblation.get(poblacion);
 					}else{
 						tempFitness = boctorModel.calculateFitness();
 						break;
-					}
+					}*/
+					tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
 				//nc.nextLine();
@@ -430,6 +432,7 @@ public class FlowerPollination {
 		Vuelo_levy L = new Vuelo_levy();
 		double step_levy, resultado, discretizacion;
 		int binarizacion;
+		
 		do {
 			step_levy = L.levy_step(1.5, 1);
 		} while (Double.isNaN(step_levy));
@@ -442,18 +445,21 @@ public class FlowerPollination {
 			}
 		}
 
-		for (int i = 0; i < data.M; i++) {
-			for (int j = 0; j < data.C; j++) {
-				resultado = temp_machine_cell[i][j]
-						+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);
-				discretizacion = VShaped.V2((float) resultado);
-				binarizacion = binarizacion(discretizacion);
-				tempSolution.getMachine_cell()[i][j] = binarizacion;
-			}
-		}
+		//for (int i = 0; i < data.M; i++) {
+			//for (int j = 0; j < data.C; j++) {
+				//resultado = temp_machine_cell[i][j]	+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);
+				resultado = subtraction(bestSolution,tempSolution);
+				resultado=resultado*step_levy;
+				tempSolution = addition(tempSolution,resultado);
+				//discretizacion = VShaped.V2((float) resultado);
+				//binarizacion = binarizacion(discretizacion);
+				//tempSolution.getMachine_cell()[i][j] = binarizacion;
+				
+		//	}
+	//	}
 
 		// Posteriormente generamos manualmente la matriz PxC
-		for (int j = 0; j < data.P; j++){
+	/*	for (int j = 0; j < data.P; j++){
 			for (int k = 0; k < data.C; k++) {
 				tempSolution.getPart_cell()[j][k] = 0;
 			}
@@ -477,7 +483,7 @@ public class FlowerPollination {
 				}
 			}
 			tempSolution.getPart_cell()[j][maxIndex] = 1;
-		}
+		}*/
 
 		return tempSolution;
 	}
@@ -496,9 +502,14 @@ public class FlowerPollination {
 				temp_machine_cell[i][j] = tempSolution.getMachine_cell()[i][j];
 			}
 		}
+		
+		resultado = subtraction(poblation.get(randomPoblationK),poblation.get(randomPoblationJ));
+		resultado=resultado*epsilon;
+		tempSolution = addition(tempSolution,resultado);
+		
 
-		for (int i = 0; i < data.M; i++) {
-			for (int j = 0; j < data.C; j++) {
+		/*for (int i = 0; i < data.M; i++) {
+			for (int j = 0; j < data.C; j++) 
 				resultado = temp_machine_cell[i][j] + epsilon * (poblation.get(randomPoblationJ).getMachine_cell()[i][j]
 						- poblation.get(randomPoblationK).getMachine_cell()[i][j]);
 				discretizacion = VShaped.V2((float) resultado);
@@ -533,7 +544,7 @@ public class FlowerPollination {
 				}
 			}
 			tempSolution.getPart_cell()[j][maxIndex] = 1;
-		}
+		}*/
 
 		return tempSolution;
 	}
@@ -603,10 +614,11 @@ public class FlowerPollination {
 		// h(PxC) = g*(PxC) - xi(PxC)
 		double[][] temp_gMxC = solution1.getDoubleMachine_cell();
 		double[][] temp_gPxC = solution1.getDoublePart_cell();
+		//System.out.println(temp_gMxC.toString());
 		double[][] temp_xiMxC = solution2.getDoubleMachine_cell();
 		double[][] temp_xiPxC = solution2.getDoublePart_cell();
-		RealMatrix gMxC = new Array2DRowRealMatrix(temp_gMxC);
 		RealMatrix gPxC = new Array2DRowRealMatrix(temp_gPxC);
+		RealMatrix gMxC = new Array2DRowRealMatrix(temp_gMxC);		
 		RealMatrix xiMxC = new Array2DRowRealMatrix(temp_xiMxC);
 		RealMatrix xiPxC = new Array2DRowRealMatrix(temp_xiPxC); // La distancia
 																	// entre dos
