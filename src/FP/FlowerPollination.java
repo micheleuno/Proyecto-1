@@ -83,7 +83,7 @@ public class FlowerPollination {
 				}
 
 				if (tempFitness < poblation.get(i).getFitness()) {
-	
+					System.out.println("tempFitness: "+tempFitness+"||"+"["+i+"]"+"poblacionFitness: "+poblation.get(i).getFitness());
 					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
 					poblation.get(i).setFitness(tempFitness);
@@ -543,7 +543,12 @@ public class FlowerPollination {
 		 * double random = rn.nextDouble(); if (random <= numDiscreto) { return
 		 * 1; } return 0;
 		 */
-		return Math.round((float) numDiscreto);
+		if(numDiscreto>0.2
+				){
+			return 1;
+		}
+		//return Math.round((float) numDiscreto);
+		return 0;
 	}
 
 	private void chooseBestSolutionInPoblation() {
