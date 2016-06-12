@@ -208,13 +208,13 @@ public class FlowerPollination {
 
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
-					//System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
+					System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
 					this.numAcceptedMoves++;
 					//nc.nextLine();
 					break;
 				} else {
 					//System.out.println("RECHAZADA mov 1");
-					//constraintOK = repararSolucion();
+					constraintOK = repararSolucion();
 					/*
 					System.out.println(constraintOK);
 					System.out.println("SOLUCION REPARADA");
@@ -224,14 +224,14 @@ public class FlowerPollination {
 						}
 						System.out.println();
 					}*/					
-					/*if (constraintOK == false) {
+					if (constraintOK == false) {
 						tempSolution = poblation.get(poblacion);
 					}else{
 						tempFitness = boctorModel.calculateFitness();
 						break;
-					}*/
-					// System.out.println("RECHAZADA");
-					tempSolution = poblation.get(poblacion);
+					}
+					 System.out.println("RECHAZADA");
+					//tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
 				//nc.nextLine();
@@ -265,7 +265,7 @@ public class FlowerPollination {
 					break;
 				} else {			
 					//System.out.println("RECHAZADA mov 2");
-					//constraintOK = repararSolucion();
+					constraintOK = repararSolucion();
 					/*System.out.println("RECHAZADA");
 					System.out.println(constraintOK);
 					System.out.println("SOLUCION REPARADA");
@@ -275,13 +275,13 @@ public class FlowerPollination {
 						}
 						System.out.println();
 					}*/
-					/*if (constraintOK == false) {
+					if (constraintOK == false) {
 						tempSolution = poblation.get(poblacion);
 					}else{
 						tempFitness = boctorModel.calculateFitness();
 						break;
-					}*/
-					tempSolution = poblation.get(poblacion);
+					}
+					//tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
 				//nc.nextLine();
@@ -439,6 +439,7 @@ public class FlowerPollination {
 		int[] vectorMaquinaBest = new int[data.M];
 		int[] vectorMaquinaActual = new int[data.M];
 		
+		//System.out.println("FITNES TEMP SOLUTION: "+tempSolution.getFitness());
 		//Pasar a vector
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
@@ -465,14 +466,18 @@ public class FlowerPollination {
 		/*resultado = subtraction(bestSolution,tempSolution);
 		resultado=resultado*step_levy;
 		tempSolution = addition(tempSolution,resultado);*/
-		
+
+		//System.out.println("Antes Movimiento"+Arrays.toString(vectorMaquinaActual));
 		for (int i = 0; i < data.M; i++) {
+		//	System.out.println("Maquina actual "+vectorMaquinaActual[i]+" LEVY "+step_levy + " Best "+vectorMaquinaBest[i]+" Maquina "+vectorMaquinaActual[i]);
 			vectorMaquinaActual[i] = aproximar(vectorMaquinaActual[i] + step_levy*(vectorMaquinaBest[i]-vectorMaquinaActual[i]));
 		}
-		
+		//System.out.println("Despu Movimiento"+Arrays.toString(vectorMaquinaActual));
 		
 		for (int i = 0; i < data.M; i++) {
 			tempMachine_cell[i][vectorMaquinaActual[i]-1]=1  ;
+
+		//	System.out.println("Solucion Convertida"+Arrays.toString(tempMachine_cell[i]));
 		}
 		
 		tempSolution.setMachine_cell(tempMachine_cell);
@@ -572,7 +577,7 @@ public class FlowerPollination {
 			//System.out.println("Maquina actual "+vectorMaquinaActual[i]+" Epsilon "+epsilon + " Maquina J "+vectorMaquinaRandomJ[i]+" maquina k "+vectorMaquinaRandomK[i]);
 			vectorMaquinaActual[i] = aproximar(vectorMaquinaActual[i] + epsilon*(vectorMaquinaRandomJ[i]-vectorMaquinaRandomK[i]));
 		}
-		
+
 		//System.out.println("Despu Movimiento"+Arrays.toString(vectorMaquinaActual));
 		
 		for (int i = 0; i < data.M; i++) {
