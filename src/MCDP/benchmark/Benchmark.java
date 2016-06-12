@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -43,7 +44,7 @@ public class Benchmark
 
 		while (nombreIterator.hasNext())
 		{
-			String filename = nombreIterator.next();			
+			String filename = nombreIterator.next();
 			Hashtable<String,String> hashTable = new Hashtable<String,String>();
 			
 			PropertiesRead p = new PropertiesRead();
@@ -82,9 +83,9 @@ public class Benchmark
 	{
 		try
 		{
-			FileInputStream fstream = new FileInputStream(file);
-			DataInputStream in = new DataInputStream(fstream);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			InputStream in = getClass().getResourceAsStream(file); 
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));	
+			
 			String str;
 			
 			while ((str = br.readLine()) != null)

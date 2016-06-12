@@ -18,11 +18,11 @@ public class PropertiesRead
 	public Hashtable<String,String> getPropEssentialValues(String fileName) throws IOException
 	{		 
 		Properties prop = new Properties();
-		String propFileName = fileName;
+		String propFileName = "resources/"+fileName;
 	
 		Hashtable<String,String> hashTable = new Hashtable<String,String>();
  
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+		InputStream inputStream = getClass().getResourceAsStream(propFileName);
  
 		if (inputStream != null)
 		{

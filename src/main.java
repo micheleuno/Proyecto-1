@@ -18,7 +18,7 @@ public class main {
 		float delta= 1.5f;
 		float switch_probability=0.1f;
 		
-		/*Logger log = Logger.getLogger(main.class);
+		Logger log = Logger.getLogger(main.class);
 		
 		log.info("Read all filenames");
 		Benchmark benchmark = new Benchmark();
@@ -26,7 +26,7 @@ public class main {
 		
 		ArrayList<MCDPModel> modelSet = benchmark.getSetModelsByNames(dataFiles);	
 		System.out.println("Read all filenames");
-		*/
+	
 		
 		
 		
