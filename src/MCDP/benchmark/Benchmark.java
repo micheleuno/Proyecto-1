@@ -42,6 +42,7 @@ public class Benchmark
 		while (nombreIterator.hasNext())
 		{
 			String filename = nombreIterator.next();
+			//System.out.println(filename);
 			Hashtable<String,String> hashTable = new Hashtable<String,String>();
 			
 			PropertiesRead p = new PropertiesRead();
@@ -56,8 +57,7 @@ public class Benchmark
 			int Mmax = Integer.parseInt(hashTable.get("Mmax"), 10);
 			int Sum = Integer.parseInt(hashTable.get("Sum"), 10);
 			String string = hashTable.get("Matrix").toString();
-			int A[][] = convert.StringToMatrixInt(string, M, P);
-		
+			int A[][] = convert.StringToMatrixInt(string, M, P);		
 			// Set values into model.
 			MCDPData model = new MCDPData(M, P, C, Mmax, A,filename);
 
@@ -70,7 +70,8 @@ public class Benchmark
 			//model.setIdentificator(filename);
 
 			// Add model into model set.
-			models.add(model);		
+			models.add(model);	
+			//filename = new String();
 		}
 
 		return models;

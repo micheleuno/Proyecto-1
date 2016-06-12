@@ -66,9 +66,9 @@ public class FlowerPollination {
 		rn = new Random();
 
 		while (iteration < this.numberIteration) {
-			System.out.println("\n>> Iteración número (" + (iteration + 1) + ")");
+			//System.out.println("\n>> Iteración número (" + (iteration + 1) + ")");
 			//toConsolePoblation();
-			toConsoleBestSolution();
+			//toConsoleBestSolution();
 
 			for (int i = 0; i < numberPoblation; i++) {
 				//toConsoleSingleSolutio(i);
@@ -208,7 +208,7 @@ public class FlowerPollination {
 
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
-					System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
+					//System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
 					this.numAcceptedMoves++;
 					//nc.nextLine();
 					break;
@@ -230,7 +230,7 @@ public class FlowerPollination {
 						tempFitness = boctorModel.calculateFitness();
 						break;
 					}
-					 System.out.println("RECHAZADA");
+					// System.out.println("RECHAZADA");
 					//tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
@@ -703,12 +703,13 @@ public class FlowerPollination {
 	public void toConsoleFinalReport() {
 		System.out.println("===============================");
 		System.out.println(">> Reporte final");
+		
 		toConsoleBestSolution();
-		System.out.println(">> NÃºmero de movimientos aceptados: " + this.numAcceptedMoves);
-		System.out.println(">> NÃºmero de movimientos fallados : " + this.numRejectedMoves);
-		MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
+		System.out.println(">> Numero de movimientos aceptados: " + this.numAcceptedMoves);
+		System.out.println(">> Numero de movimientos fallados : " + this.numRejectedMoves);
+		/*MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
 				this.bestSolution.getMachine_cell(), this.bestSolution.getPart_cell());
-		boctorModel.convertToFinalMatrix();
+		boctorModel.convertToFinalMatrix();*/
 
 		/*
 		 * for (int i = 0; i < data.M; i++) { for (int a = 0; a <
