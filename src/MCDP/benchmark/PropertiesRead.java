@@ -18,7 +18,7 @@ public class PropertiesRead
 	public Hashtable<String,String> getPropEssentialValues(String fileName) throws IOException
 	{		 
 		Properties prop = new Properties();
-		String propFileName = "resources/"+fileName;
+		String propFileName = "/resources/"+fileName;
 	
 		Hashtable<String,String> hashTable = new Hashtable<String,String>();
  

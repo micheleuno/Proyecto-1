@@ -1,10 +1,11 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
 import FP.FlowerPollination;
 import MCDP.benchmark.Benchmark;
-import MCDP.benchmark.Main;
 import MCDP.model.MCDPData;
 import MCDP.model.MCDPModel;
 
@@ -22,17 +23,24 @@ public class main {
 		
 		log.info("Read all filenames");
 		Benchmark benchmark = new Benchmark();
-		ArrayList<String> dataFiles = benchmark.readSetFileBenchmark("resources/MBO_MCDP_BENCHMARK_FILES--boctor.txt");
+		ArrayList<String> dataFiles = benchmark.readSetFileBenchmark("/resources/MBO_MCDP_BENCHMARK_FILES--boctor.txt");
 		
-		ArrayList<MCDPModel> modelSet = benchmark.getSetModelsByNames(dataFiles);	
+		ArrayList<MCDPData> modelSet = benchmark.getSetModelsByNames(dataFiles);	
 		System.out.println("Read all filenames");
-	
+		Iterator<MCDPData> iterator = modelSet.iterator();
 		
+		while (iterator.hasNext()){
+			MCDPData model = iterator.next();
+			System.out.println("Problema [" + model.getIdentificator()+"] Maquinas ["+model.M+"] Celdas ["+model.C+"] Piezas ["+model.P+"] Max Maquinas ["+model.mmax+"]");
+			for(int i=0;i<model.getA().length;i++){
+				System.out.println(Arrays.toString(model.getA()[i]));
+			}
+		}
 		
 		
 		
 		// Crear parametros del benchmark del modelo de boctor
-		MCDPData data = new MCDPData();
+		/*MCDPData data = new MCDPData();
 		
 		// Crear la metaheuristica
 		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data,delta ,switch_probability);
@@ -41,7 +49,7 @@ public class main {
 		metaheuristic.run();
 		
 		// imprimir estadisticas
-		metaheuristic.toConsoleFinalReport();
+		metaheuristic.toConsoleFinalReport();*/
 	}
 
 }

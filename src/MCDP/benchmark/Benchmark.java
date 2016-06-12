@@ -1,8 +1,6 @@
 package MCDP.benchmark;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,8 +10,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import MCDP.model.MCDPModel;
-//import MCDP.model.ModelIntMCDP;
+import MCDP.model.MCDPData;
 
 
 public class Benchmark
@@ -37,9 +34,9 @@ public class Benchmark
 	}
 	
 	// leo a traves de un listado de nombres de archivo, los modelos con datos.
-	public ArrayList<MCDPModel> getSetModelsByNames(ArrayList<String> filenames) throws IOException
+	public ArrayList<MCDPData> getSetModelsByNames(ArrayList<String> filenames) throws IOException
 	{
-		ArrayList<MCDPModel> models = new ArrayList<MCDPModel>();
+		ArrayList<MCDPData> models = new ArrayList<MCDPData>();
 		Iterator<String> nombreIterator = filenames.iterator();
 
 		while (nombreIterator.hasNext())
@@ -60,9 +57,9 @@ public class Benchmark
 			int Sum = Integer.parseInt(hashTable.get("Sum"), 10);
 			String string = hashTable.get("Matrix").toString();
 			int A[][] = convert.StringToMatrixInt(string, M, P);
-
+		
 			// Set values into model.
-		MCDPModel model = new MCDPModel(A, M, P, C, Mmax, A,A);
+			MCDPData model = new MCDPData(M, P, C, Mmax, A,filename);
 
 			// Set identificator Model (KEY).
 			int pos = filename.lastIndexOf(".");
@@ -83,6 +80,7 @@ public class Benchmark
 	{
 		try
 		{
+			System.out.println("caca "+file);
 			InputStream in = getClass().getResourceAsStream(file); 
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));	
 			
