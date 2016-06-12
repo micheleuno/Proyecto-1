@@ -1,6 +1,7 @@
 package FP;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.IntStream;
@@ -433,35 +434,61 @@ public class FlowerPollination {
 	private Solution generarPasoLevy(Solution tempSolution) {
 		Vuelo_levy L = new Vuelo_levy();
 		double step_levy, resultado, discretizacion;
+		int[][] tempMachine_cell = new int[data.M][data.C];
 		int binarizacion;
+		int[] vectorMaquinaBest = new int[data.M];
+		int[] vectorMaquinaActual = new int[data.M];
+		
+		//Pasar a vector
+		for (int i = 0; i < data.M; i++) {
+			for (int j = 0; j < data.C; j++) {
+				if(tempSolution.getMachine_cell()[i][j]==1){
+					vectorMaquinaActual[i] =j+1;
+				}					
+				if(bestSolution.getMachine_cell()[i][j]==1){
+					vectorMaquinaBest[i] = j+1;
+				}			
+			}
+		}
 		
 		do {
 			step_levy = L.levy_step(1.5, 1);
 		} while (Double.isNaN(step_levy));
 
-		double temp_machine_cell[][] = new double[data.M][data.C];
+		/*double temp_machine_cell[][] = new double[data.M][data.C];
 
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
 				temp_machine_cell[i][j] = tempSolution.getMachine_cell()[i][j];
 			}
 		}
-
-		//for (int i = 0; i < data.M; i++) {
-			//for (int j = 0; j < data.C; j++) {
-				//resultado = temp_machine_cell[i][j]	+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);
-				resultado = subtraction(bestSolution,tempSolution);
-				resultado=resultado*step_levy;
-				tempSolution = addition(tempSolution,resultado);
-				//discretizacion = VShaped.V2((float) resultado);
-				//binarizacion = binarizacion(discretizacion);
-				//tempSolution.getMachine_cell()[i][j] = binarizacion;
+		/*resultado = subtraction(bestSolution,tempSolution);
+		resultado=resultado*step_levy;
+		tempSolution = addition(tempSolution,resultado);*/
+		
+		for (int i = 0; i < data.M; i++) {
+			vectorMaquinaActual[i] = aproximar(vectorMaquinaActual[i] + step_levy*(vectorMaquinaBest[i]-vectorMaquinaActual[i]));
+		}
+		
+		
+		for (int i = 0; i < data.M; i++) {
+			tempMachine_cell[i][vectorMaquinaActual[i]-1]=1  ;
+		}
+		
+		tempSolution.setMachine_cell(tempMachine_cell);
+		
+		/*for (int i = 0; i < data.M; i++) {
+			for (int j = 0; j < data.C; j++) {
+				resultado = temp_machine_cell[i][j]	+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);			
+				discretizacion = VShaped.V2((float) resultado);
+				binarizacion = binarizacion(discretizacion);
+				tempSolution.getMachine_cell()[i][j] = binarizacion;
 				
-		//	}
-	//	}
+			}
+		}*/
 
 		// Posteriormente generamos manualmente la matriz PxC
-	/*	for (int j = 0; j < data.P; j++){
+		for (int j = 0; j < data.P; j++){
 			for (int k = 0; k < data.C; k++) {
 				tempSolution.getPart_cell()[j][k] = 0;
 			}
@@ -485,9 +512,20 @@ public class FlowerPollination {
 				}
 			}
 			tempSolution.getPart_cell()[j][maxIndex] = 1;
-		}*/
+		}
 
 		return tempSolution;
+	}
+	private int aproximar(double movimiento){
+		int aproximado;
+		aproximado=Math.round((float)movimiento);
+		if(aproximado<1){
+			aproximado = 1;
+		}else if(aproximado>data.C){
+			aproximado = data.C;
+		}
+			
+		return aproximado;
 	}
 
 	private Solution generarPasoLocal(Solution tempSolution) {
@@ -495,20 +533,53 @@ public class FlowerPollination {
 		int randomPoblationK, randomPoblationJ, binarizacion;
 		randomPoblationK = rn.nextInt((numberPoblation - 1) - 0 + 1);
 		randomPoblationJ = rn.nextInt((numberPoblation - 1) - 0 + 1);
+		int[] vectorMaquinaRandomK = new int[data.M];
+		int[] vectorMaquinaRandomJ= new int[data.M];
+		int[] vectorMaquinaActual= new int[data.M];
+		int[][] tempMachine_cell = new int[data.M][data.C]; 
 		epsilon = rn.nextDouble();
+		
+		
+		for (int i = 0; i < data.M; i++) {
+			for (int j = 0; j < data.C; j++) {
+				if(poblation.get(randomPoblationK).getMachine_cell()[i][j]==1){
+					vectorMaquinaRandomK[i] =j+1;
+				}					
+				if(poblation.get(randomPoblationJ).getMachine_cell()[i][j]==1){
+					vectorMaquinaRandomJ[i] = j+1;
+				}	
+				if(tempSolution.getMachine_cell()[i][j]==1){
+					vectorMaquinaActual[i] = j+1;
+				}	
+			}
+		}
+		
 
-		double temp_machine_cell[][] = new double[data.M][data.C];
+	/*	double temp_machine_cell[][] = new double[data.M][data.C];
 
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
 				temp_machine_cell[i][j] = tempSolution.getMachine_cell()[i][j];
 			}
+		}*/
+		
+		/*resultado = subtraction(poblation.get(randomPoblationK),poblation.get(randomPoblationJ));
+		resultado=resultado*epsilon;
+		tempSolution = addition(tempSolution,resultado);*/
+	//	System.out.println("Antes movimiento"+Arrays.toString(vectorMaquinaActual));
+		
+		for (int i = 0; i < data.M; i++) {
+			//System.out.println("Maquina actual "+vectorMaquinaActual[i]+" Epsilon "+epsilon + " Maquina J "+vectorMaquinaRandomJ[i]+" maquina k "+vectorMaquinaRandomK[i]);
+			vectorMaquinaActual[i] = aproximar(vectorMaquinaActual[i] + epsilon*(vectorMaquinaRandomJ[i]-vectorMaquinaRandomK[i]));
 		}
 		
-		resultado = subtraction(poblation.get(randomPoblationK),poblation.get(randomPoblationJ));
-		resultado=resultado*epsilon;
-		tempSolution = addition(tempSolution,resultado);
+		//System.out.println("Despu Movimiento"+Arrays.toString(vectorMaquinaActual));
 		
+		for (int i = 0; i < data.M; i++) {
+			tempMachine_cell[i][vectorMaquinaActual[i]-1]=1  ;
+		}
+		
+		tempSolution.setMachine_cell(tempMachine_cell);
 
 		/*for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) 
@@ -518,7 +589,7 @@ public class FlowerPollination {
 				binarizacion = binarizacion(discretizacion);
 				tempSolution.getMachine_cell()[i][j] = binarizacion;
 			}
-		}
+		}*/
 
 		// Posteriormente generamos manualmente la matriz PxC
 		for (int j = 0; j < data.P; j++){
@@ -546,7 +617,7 @@ public class FlowerPollination {
 				}
 			}
 			tempSolution.getPart_cell()[j][maxIndex] = 1;
-		}*/
+		}
 
 		return tempSolution;
 	}

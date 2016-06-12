@@ -14,7 +14,7 @@ public class main {
 	{
 		// Crear parametros iniciales de la metaheuristica
 		int numberPoblation = 15;
-		int numberIteration = 100;
+		int numberIteration = 5000;
 		
 		/*Logger log = Logger.getLogger(main.class);
 		
@@ -33,7 +33,7 @@ public class main {
 		MCDPData data = new MCDPData();
 		
 		// Crear la metaheuristica
-		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data, 1.5,0.1);
+		FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, data, 1.5,0.8);
 		
 		// Ejecutar la metaheuristica
 		metaheuristic.run();
