@@ -419,7 +419,7 @@ public class Statistics
 		Cell cellTitle = rowTitle.createCell(0);
 		cellTitle.setCellValue("Best fitness");
 		Cell cellFitness = rowTitle.createCell(1);
-		cellFitness.setCellValue(Collections.min(executionValues));
+		cellFitness.setCellValue((double) Collections.min(executionValues));
 		
 		Row rowOtherTitle = sheet.createRow(1);
 		Cell cellOtherTitle = rowOtherTitle.createCell(0);

@@ -1,21 +1,19 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.Scanner;
+import java.util.Locale;
 
 import org.apache.log4j.Logger;
 
 import FP.FlowerPollination;
 import MCDP.benchmark.Benchmark;
+import MCDP.benchmark.Statistics;
 import MCDP.model.MCDPData;
-import MCDP.model.MCDPModel;
 
 public class main {
 
@@ -26,7 +24,8 @@ public class main {
 		int numberIteration = 100;
 		float delta= 1.5f;
 		float switch_probability=0.1f;
-		
+		int executions=30;
+		int row;
 		Logger log = Logger.getLogger(main.class);
 		
 		log.info("Read all filenames");
@@ -37,20 +36,88 @@ public class main {
 		System.out.println("Read all filenames");
 		Iterator<MCDPData> iterator = modelSet.iterator();
 		
+		
+		String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+		String benchmarkFileConfig = "n_"+numberPoblation+"_d_"+delta+"_SWp_"+switch_probability+"_in_"+numberIteration+"";
+		
+		String directory = "Test/" + timeStamp + "_" + benchmarkFileConfig;
+		File directoryFile = new File(directory);
+		boolean b = directoryFile.mkdir();
+		if (b)
+		{
+			System.out.printf("Successfully created new directory: %s%n", directory);
+		}
+		else
+		{
+			System.out.printf("Failed to create new directory: %s%n", directory);
+		}
+		
+		Statistics mainResume = new Statistics();
+		mainResume.setDirectory(directory);
+		mainResume.setFileName("Main_Resume");
+		mainResume.createExcelFile();
+		row = 0;
 		while (iterator.hasNext()){
 			
 			MCDPData model = iterator.next();
+			
+			
+			String fileName = model.getIdentificator();		
+			Statistics statistics = new Statistics();
+			statistics.setDirectory(directory);
+			statistics.setFileName(fileName);
+			statistics.createExcelFile();
+			
+			for (int i = 0; i < executions; i++){
+			
 			FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, model,delta ,switch_probability);
+			//Date object
+			//Inicio
+			long startBenchmark = System.currentTimeMillis();
+			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm:ss.SSS", Locale.ENGLISH);    
+			Date resultdate = new Date(startBenchmark);
+			System.out.println("Start: "+sdf.format(resultdate));
+			
 			metaheuristic.run();
+			//Fin
+			long endBenchmark = System.currentTimeMillis();
+			Date resultdate2 = new Date(endBenchmark);
+			System.out.println("End: "+sdf.format(resultdate2));
+			
 			metaheuristic.toConsoleFinalReport();
+			
+			statistics.openExcelFile();
+			 
+			// Save statistics
+			/*statistics.setStatistics(	i, metaheuristic.getStatisticsIntegerData(), metaheuristic.getCycleFitness(),
+					metaheuristic.getSolutionY(), metaheuristic.getSolutionZ(),
+					startBenchmark, endBenchmark);*/
+
+			statistics.saveSolutions("Solution_"+i);
+			statistics.saveExecutions("Execution_"+i);
+			
+			
+			}
+			statistics.openExcelFile();
+			statistics.saveResume("Resume");
+			
+			mainResume.openExcelFile();
+			
+			mainResume.saveLittleResume("Little_Resume", row, statistics.getFileName(), statistics.getBestFitness(),
+					statistics.getMean(), statistics.getMedian(), statistics.getVariance(),
+					statistics.getStandardDeviation());		
+			
+			
+			
+			mainResume.closeExcelFile();			
+			row++;
+			statistics.closeExcelFile();
+			
 			System.out.println("Problema [" + model.getIdentificator()+"]");
 			
 			obtenerOptimo("src/resources/"+model.getIdentificator());
 			System.out.println("=============================");
-			//System.out.println("Problema [" + model.getIdentificator()+"] Maquinas ["+model.M+"] Celdas ["+model.C+"] Piezas ["+model.P+"] Max Maquinas ["+model.mmax+"]");
-			for(int i=0;i<model.getA().length;i++){
-			//	System.out.println(Arrays.toString(model.getA()[i]));
-			}
+			
 		}
 		
 		
