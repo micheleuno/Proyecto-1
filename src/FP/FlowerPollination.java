@@ -825,5 +825,7 @@ public class FlowerPollination {
 		// toConsole("getRandomMove2", machine_cell, part_cell);
 		return new Solution(machine_cell, part_cell);
 	}
-
+	public Solution getBestSolution(){
+		return bestSolution;
+	}
 }

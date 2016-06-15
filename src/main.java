@@ -14,6 +14,7 @@ import FP.FlowerPollination;
 import MCDP.benchmark.Benchmark;
 import MCDP.benchmark.Statistics;
 import MCDP.model.MCDPData;
+import MCDP.model.Solution;
 
 public class main {
 
@@ -24,8 +25,10 @@ public class main {
 		int numberIteration = 100;
 		float delta= 1.5f;
 		float switch_probability=0.1f;
-		int executions=1;
+		int executions=30;
 		int row;
+		int mean_fitness=0,best_fitness=999999999;
+		
 		Logger log = Logger.getLogger(main.class);
 		
 		log.info("Read all filenames");
@@ -84,7 +87,15 @@ public class main {
 			Date resultdate2 = new Date(endBenchmark);
 			System.out.println("End: "+sdf.format(resultdate2));
 			
-			metaheuristic.toConsoleFinalReport();
+			//metaheuristic.toConsoleFinalReport();
+			Solution bestSolution= metaheuristic.getBestSolution();
+			System.out.println();
+			System.out.println("Mejor solucion ejecucion ("+(i+1)+"): "+bestSolution.getFitness());
+			System.out.println();
+			mean_fitness=mean_fitness+bestSolution.getFitness();
+			if(best_fitness>bestSolution.getFitness()){
+				best_fitness=bestSolution.getFitness();
+			}
 			
 		//	statistics.openExcelFile();
 			 
@@ -98,6 +109,10 @@ public class main {
 			
 			
 			}
+			mean_fitness = mean_fitness/executions;
+			System.out.println("Promedio del mejor fitness:["+mean_fitness+"] "+"Mejor Solucion: ["+best_fitness+"]");
+			mean_fitness=0;
+			best_fitness=999999999;
 			/*statistics.openExcelFile();
 			statistics.saveResume("Resume");
 			
