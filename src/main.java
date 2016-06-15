@@ -24,7 +24,7 @@ public class main {
 		int numberIteration = 100;
 		float delta= 1.5f;
 		float switch_probability=0.1f;
-		int executions=30;
+		int executions=1;
 		int row;
 		Logger log = Logger.getLogger(main.class);
 		
@@ -86,32 +86,32 @@ public class main {
 			
 			metaheuristic.toConsoleFinalReport();
 			
-			statistics.openExcelFile();
+		//	statistics.openExcelFile();
 			 
 			// Save statistics
-			/*statistics.setStatistics(	i, metaheuristic.getStatisticsIntegerData(), metaheuristic.getCycleFitness(),
+		/*	statistics.setStatistics(	i, metaheuristic.getStatisticsIntegerData(), metaheuristic.getCycleFitness(),
 					metaheuristic.getSolutionY(), metaheuristic.getSolutionZ(),
 					startBenchmark, endBenchmark);*/
 
-			statistics.saveSolutions("Solution_"+i);
-			statistics.saveExecutions("Execution_"+i);
+			//statistics.saveSolutions("Solution_"+i);
+			//statistics.saveExecutions("Execution_"+i);
 			
 			
 			}
-			statistics.openExcelFile();
+			/*statistics.openExcelFile();
 			statistics.saveResume("Resume");
 			
 			mainResume.openExcelFile();
 			
-			mainResume.saveLittleResume("Little_Resume", row, statistics.getFileName(), statistics.getBestFitness(),
+			/*mainResume.saveLittleResume("Little_Resume", row, statistics.getFileName(), statistics.getBestFitness(),
 					statistics.getMean(), statistics.getMedian(), statistics.getVariance(),
-					statistics.getStandardDeviation());		
+					statistics.getStandardDeviation());		*/
 			
 			
 			
-			mainResume.closeExcelFile();			
+			/*mainResume.closeExcelFile();			
 			row++;
-			statistics.closeExcelFile();
+			statistics.closeExcelFile();*/
 			
 			System.out.println("Problema [" + model.getIdentificator()+"]");
 			
