@@ -97,6 +97,8 @@ public class FlowerPollination {
 			iteration++;
 			//sc.nextLine();
 		}
+		
+		//Crear excels con datos para grafico convergencia
 		Statistics.createConvergenciGraph(data.getIdentificator(),vector_fitness);
 		/*grafico = new Grafico(vector_fitness, data,numberIteration,numberPoblation);
 		grafico.setVisible(true);

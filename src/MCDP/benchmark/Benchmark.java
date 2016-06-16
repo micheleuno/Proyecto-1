@@ -81,7 +81,6 @@ public class Benchmark
 	{
 		try
 		{
-			System.out.println("caca "+file);
 			InputStream in = getClass().getResourceAsStream(file); 
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));	
 			

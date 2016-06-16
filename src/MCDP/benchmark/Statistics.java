@@ -254,65 +254,53 @@ public class Statistics
             e.printStackTrace();
         }
 	}
-	/*public static void createTable(){
+	public static void createTable(int fila,int mmax,int bestGlobal,int bestFitness,float meanFitness,String nProblema){
 		 try {
+			 String dato[] = nProblema.split("_");
+			 String num_problema = dato[2].substring(dato[2].length() - 2);
+			 double RPD=((bestFitness-bestGlobal)/bestGlobal)*100;
+			 
 			  HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream("registro.xls"));
 			// HSSFWorkbook workbook = new HSSFWorkbook();
 			 
 		        HSSFSheet sheet = workbook.getSheet("Hoja1");            
 		         
-		       
-		        int rownum = 0;
+		      
 		        Row row ;
 		        Cell cell;
 		        
-		      
-		       
 		        	
-		             row = sheet.createRow();
-		            registros.get(rownum);
+		             row = sheet.createRow(fila+1);
 		            
 		            cell = row.createCell(0);
-		            cell.setCellValue(registros.get(rownum).getFlag());	   
-		             cell = row.createCell(1);
-		            cell.setCellValue(registros.get(rownum).getNumero_documento());	   
+		            cell.setCellValue(fila+1);	   
+		            cell = row.createCell(1);
+		            cell.setCellValue(Integer.parseInt(num_problema));
 		            cell = row.createCell(2);	      
-		            cell.setCellValue(registros.get(rownum).getFecha());
+		            cell.setCellValue(mmax);
 		            cell = row.createCell(3);	      
-		            cell.setCellValue(registros.get(rownum).getCliente());
+		            cell.setCellValue(bestGlobal);
 		            cell = row.createCell(4);
-		            cell.setCellValue(registros.get(rownum).getRut());
+		            cell.setCellValue(bestFitness);
 		            cell = row.createCell(5);
-		            cell.setCellValue(registros.get(rownum).getDigito());
+		            cell.setCellValue(meanFitness);
 		            cell = row.createCell(6);
-		            cell.setCellValue(registros.get(rownum).getNeto());
-		            cell = row.createCell(7);
-		            cell.setCellValue(registros.get(rownum).getIva());
-		            cell = row.createCell(8);
-		            cell.setCellValue(registros.get(rownum).getTotal());
-		            cell = row.createCell(9);
-		            cell.setCellValue(registros.get(rownum).getVendedor());
-		            
-		            rownum++;
-		            ultima[1]++;
-		           
-		        }
-		         
+		            cell.setCellValue(RPD);
 		       
 		            FileOutputStream out = 
 		                    new FileOutputStream(new File("registro.xls"));
 		            workbook.write(out);
 		            out.close();
-		            JOptionPane.showMessageDialog(null, "Achivo creado con éxito");
+		         
 		            workbook.close(); 
 		        } catch (FileNotFoundException e) {
-		        	JOptionPane.showMessageDialog(null, "Debe cerrar el archivo excel");
+		        	
 		            e.printStackTrace();
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        }
 		      
-	}*/
+	}
 
 	public void saveSolutions(String sheetName)
 	{
