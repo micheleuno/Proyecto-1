@@ -2,6 +2,7 @@ package MCDP.benchmark;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,15 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
-import org.apache.commons.math3.stat.Frequency;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -86,7 +84,7 @@ public class Statistics
 	 * Excel
 	 */
 	File fileXLS;
-	Workbook book;
+	static Workbook book;
 	FileOutputStream fileOutputStream;
 	
 	public Statistics()
@@ -219,7 +217,102 @@ public class Statistics
 		log.info("Close Excel File");
 	}
 
-
+	public static void createConvergenciGraph(String identificator,int[] datos) {
+		
+		try {
+		
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		// HSSFWorkbook workbook = new HSSFWorkbook();
+		 
+		 HSSFSheet sheet = workbook.createSheet("Hoja 1");           
+	         
+		int fila = 0;
+		Row row ;
+		Cell cell;
+		 row = sheet.createRow(0);
+		 
+		 cell = row.createCell(0);
+		 cell.setCellValue("Iteracion");
+		 cell = row.createCell(1);
+		 cell.setCellValue("Fitness");
+		 
+		 while (fila<datos.length) {
+			 row = sheet.createRow(fila+1);
+			 cell = row.createCell(0);
+			 cell.setCellValue(fila+1);
+			 cell = row.createCell(1);
+			 cell.setCellValue(datos[fila]);
+			 fila++;
+		 }
+		 FileOutputStream out = 
+                 new FileOutputStream(new File(identificator+".xls"));
+         workbook.write(out);
+         out.close();
+		} catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	}
+	public static void createTable(){
+		 try {
+			  HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream("registro.xls"));
+			// HSSFWorkbook workbook = new HSSFWorkbook();
+			 
+		        HSSFSheet sheet = workbook.getSheet("Hoja1");            
+		         
+		       
+		        int rownum = 0;
+		        Row row ;
+		        Cell cell;
+		        
+		      
+		       
+		        	
+		             row = sheet.createRow();
+		            registros.get(rownum);
+		            
+		            cell = row.createCell(0);
+		            cell.setCellValue(registros.get(rownum).getFlag());	   
+		             cell = row.createCell(1);
+		            cell.setCellValue(registros.get(rownum).getNumero_documento());	   
+		            cell = row.createCell(2);	      
+		            cell.setCellValue(registros.get(rownum).getFecha());
+		            cell = row.createCell(3);	      
+		            cell.setCellValue(registros.get(rownum).getCliente());
+		            cell = row.createCell(4);
+		            cell.setCellValue(registros.get(rownum).getRut());
+		            cell = row.createCell(5);
+		            cell.setCellValue(registros.get(rownum).getDigito());
+		            cell = row.createCell(6);
+		            cell.setCellValue(registros.get(rownum).getNeto());
+		            cell = row.createCell(7);
+		            cell.setCellValue(registros.get(rownum).getIva());
+		            cell = row.createCell(8);
+		            cell.setCellValue(registros.get(rownum).getTotal());
+		            cell = row.createCell(9);
+		            cell.setCellValue(registros.get(rownum).getVendedor());
+		            
+		            rownum++;
+		            ultima[1]++;
+		           
+		        }
+		         
+		       
+		            FileOutputStream out = 
+		                    new FileOutputStream(new File("registro.xls"));
+		            workbook.write(out);
+		            out.close();
+		            JOptionPane.showMessageDialog(null, "Achivo creado con éxito");
+		            workbook.close(); 
+		        } catch (FileNotFoundException e) {
+		        	JOptionPane.showMessageDialog(null, "Debe cerrar el archivo excel");
+		            e.printStackTrace();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+		      
+	}
 
 	public void saveSolutions(String sheetName)
 	{
