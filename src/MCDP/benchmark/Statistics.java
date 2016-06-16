@@ -254,7 +254,7 @@ public class Statistics
             e.printStackTrace();
         }
 	}
-	public static void createTable(){
+	/*public static void createTable(){
 		 try {
 			  HSSFWorkbook workbook = new HSSFWorkbook(new FileInputStream("registro.xls"));
 			// HSSFWorkbook workbook = new HSSFWorkbook();
@@ -312,7 +312,7 @@ public class Statistics
 		            e.printStackTrace();
 		        }
 		      
-	}
+	}*/
 
 	public void saveSolutions(String sheetName)
 	{

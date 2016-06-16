@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealMatrix;
 
+import MCDP.benchmark.Statistics;
 import MCDP.model.MCDPData;
 import MCDP.model.MCDPModel;
 import MCDP.model.MCDPRandomSolution;
@@ -92,10 +93,11 @@ public class FlowerPollination {
 			}
 
 			chooseBestSolutionInPoblation();
-			vector_fitness[iteration] = bestSolution.getFitness();
+			vector_fitness[iteration] = bestSolution.getFitness();			
 			iteration++;
 			//sc.nextLine();
 		}
+		Statistics.createConvergenciGraph(data.getIdentificator(),vector_fitness);
 		/*grafico = new Grafico(vector_fitness, data,numberIteration,numberPoblation);
 		grafico.setVisible(true);
 		sc.nextLine();*/
