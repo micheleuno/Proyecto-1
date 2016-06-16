@@ -1,7 +1,6 @@
 package FP;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.IntStream;
@@ -11,7 +10,6 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 import MCDP.model.MCDPData;
 import MCDP.model.MCDPModel;
-import MCDP.model.MCDPNeighbourSolution;
 import MCDP.model.MCDPRandomSolution;
 import MCDP.model.Solution;
 
@@ -21,7 +19,8 @@ public class FlowerPollination {
 	private int numberIteration;
 	private double delta;
 	private double switchProbability;
-
+	private int vector_fitness[];
+	Grafico grafico = null;
 	private ArrayList<Solution> poblation; // Un arreglo de soluciones
 	private Solution bestSolution, tempSolution; // Mejor Solucion
 	int tempFitness = 0;
@@ -51,17 +50,18 @@ public class FlowerPollination {
 		this.numRejectedMoves = 0;
 		this.delta = delta;
 		this.switchProbability = switchProbability;
+		this.vector_fitness=new int[numberIteration];
 	}
 
 	public void run() {
 		matrizSimilitud = new int[data.M][data.M];
 		calcularSimilitudMaquinas();
-		System.out.println(">> Generar poblacion inicial\n");
+		//System.out.println(">> Generar poblacion inicial\n");
 		generateInitialPoblation();
 		chooseBestSolutionInPoblation();
 
 		// Metaheuristic cycle
-		System.out.println("\n>> Comenzar el ciclo de la metaheuristica");
+		//System.out.println("\n>> Comenzar el ciclo de la metaheuristica");
 		int iteration = 0;
 		rn = new Random();
 
@@ -92,9 +92,13 @@ public class FlowerPollination {
 			}
 
 			chooseBestSolutionInPoblation();
+			vector_fitness[iteration] = bestSolution.getFitness();
 			iteration++;
 			//sc.nextLine();
 		}
+		/*grafico = new Grafico(vector_fitness, data,numberIteration,numberPoblation);
+		grafico.setVisible(true);
+		sc.nextLine();*/
 	}
 
 	public void calcularSimilitudMaquinas() {

@@ -3,6 +3,7 @@ package MCDP.model;
 public class MCDPData
 {
 	private String identificator;
+	private int bestSGlobal;
 
 	public int M ;
 	public int P ;
@@ -55,6 +56,12 @@ public class MCDPData
 	}
 	public void setIdentificator(String identificator) {
 		this.identificator = identificator;
+	}
+	public int getBestSGlobal() {
+		return bestSGlobal;
+	}
+	public void setBestSGlobal(int bestSGlobal) {
+		this.bestSGlobal = bestSGlobal;
 	}
 
 }
