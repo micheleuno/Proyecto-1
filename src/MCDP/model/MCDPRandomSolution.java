@@ -13,6 +13,7 @@ public class MCDPRandomSolution
 	private int M;
 	private int P;
 	private int C;
+	@SuppressWarnings("unused")
 	private int Mmax;
 	
 	// Constructor

@@ -55,6 +55,7 @@ public class Benchmark
 			int P = Integer.parseInt(hashTable.get("Parts"), 10);
 			int C = Integer.parseInt(hashTable.get("Cells"), 10);
 			int Mmax = Integer.parseInt(hashTable.get("Mmax"), 10);
+			@SuppressWarnings("unused")
 			int Sum = Integer.parseInt(hashTable.get("Sum"), 10);
 			String string = hashTable.get("Matrix").toString();
 			int A[][] = convert.StringToMatrixInt(string, M, P);		

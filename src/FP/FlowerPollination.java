@@ -5,9 +5,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.RealMatrix;
-
 import MCDP.benchmark.Statistics;
 import MCDP.model.MCDPData;
 import MCDP.model.MCDPModel;
@@ -18,10 +15,12 @@ public class FlowerPollination {
 	// Parametros de la metaheuristica
 	private int numberPoblation;
 	private int numberIteration;
+	@SuppressWarnings("unused")
 	private double delta;
 	private double switchProbability;
 	private int vector_fitness[];
 	Grafico grafico = null;
+	private String directoryName = null;
 	private ArrayList<Solution> poblation; // Un arreglo de soluciones
 	private Solution bestSolution, tempSolution; // Mejor Solucion
 	int tempFitness = 0;
@@ -38,10 +37,10 @@ public class FlowerPollination {
 
 	Random rn;
 	double d;
-	Scanner sc=new Scanner(System.in);
+	Scanner sc = new Scanner(System.in);
 
 	public FlowerPollination(int numberPoblation, int numberIteration, MCDPData data, double delta,
-			double switchProbability) {
+			double switchProbability, String directory) {
 		this.numberPoblation = numberPoblation;
 		this.numberIteration = numberIteration;
 		this.data = data;
@@ -51,28 +50,28 @@ public class FlowerPollination {
 		this.numRejectedMoves = 0;
 		this.delta = delta;
 		this.switchProbability = switchProbability;
-		this.vector_fitness=new int[numberIteration];
+		this.vector_fitness = new int[numberIteration];
+		this.directoryName = directory;
 	}
 
 	public void run() {
 		matrizSimilitud = new int[data.M][data.M];
 		calcularSimilitudMaquinas();
-		//System.out.println(">> Generar poblacion inicial\n");
 		generateInitialPoblation();
 		chooseBestSolutionInPoblation();
 
 		// Metaheuristic cycle
-		//System.out.println("\n>> Comenzar el ciclo de la metaheuristica");
 		int iteration = 0;
 		rn = new Random();
 
 		while (iteration < this.numberIteration) {
-			//System.out.println("\n>> Iteración número (" + (iteration + 1) + ")");
-			//toConsolePoblation();
-			//toConsoleBestSolution();
+			// System.out.println("\n>> Iteración número (" + (iteration + 1) +
+			// ")");
+			// toConsolePoblation();
+			// toConsoleBestSolution();
 
 			for (int i = 0; i < numberPoblation; i++) {
-				//toConsoleSingleSolutio(i);
+				// toConsoleSingleSolutio(i);
 				d = rn.nextDouble(); // random value in range 0.0 - 1.0
 
 				tempSolution = new Solution(poblation.get(i).getMachine_cell(), poblation.get(i).getPart_cell(),
@@ -85,7 +84,6 @@ public class FlowerPollination {
 				}
 
 				if (tempFitness < poblation.get(i).getFitness()) {
-					//System.out.println("tempFitness: "+tempFitness+"||"+"["+i+"]"+"poblacionFitness: "+poblation.get(i).getFitness());
 					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
 					poblation.get(i).setFitness(tempFitness);
@@ -93,16 +91,21 @@ public class FlowerPollination {
 			}
 
 			chooseBestSolutionInPoblation();
-			vector_fitness[iteration] = bestSolution.getFitness();			
+			vector_fitness[iteration] = bestSolution.getFitness();
 			iteration++;
-			//sc.nextLine();
 		}
-		
-		//Crear excels con datos para grafico convergencia
-		Statistics.createConvergenciGraph(data.getIdentificator(),vector_fitness);
-		/*grafico = new Grafico(vector_fitness, data,numberIteration,numberPoblation);
-		grafico.setVisible(true);
-		sc.nextLine();*/
+
+		// Crear excels con datos para grafico convergencia
+		Statistics.createConvergenciGraph(data.getIdentificator(), vector_fitness, directoryName);
+		// Descomentar para crear grafico java
+		/*
+		  grafico = new Grafico(vector_fitness,
+		  data,numberIteration,numberPoblation);
+		  grafico.setVisible(true);
+		  System.out.println("Presione una tecla para continuar")
+		  sc.nextLine();
+		  */
+		 
 	}
 
 	public void calcularSimilitudMaquinas() {
@@ -140,7 +143,7 @@ public class FlowerPollination {
 			MCDPRandomSolution randomSolution = new MCDPRandomSolution(data.A, data.M, data.P, data.C, data.mmax);
 			int randomSolutionFitness = 0;
 
-			// Estoy en el ciclo hasta generar una soluciÃ³n randomica que
+			// Estoy en el ciclo hasta generar una solucion randomica que
 			// satisfaga las restricciones
 			while (constraintOK == false) {
 				// Create random solution
@@ -169,6 +172,7 @@ public class FlowerPollination {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void toConsolePoblation() {
 		for (int i = 0; i < numberPoblation; i++) {
 			System.out.println(">> Poblation > Solution [" + (i + 1) + "]");
@@ -177,16 +181,6 @@ public class FlowerPollination {
 			poblation.get(i).toConsoleFitness();
 			System.out.println("");
 		}
-	}
-
-	private void toConsoleSingleSolutio(int i) {
-
-		System.out.println(i + "Poblacion del vector soluciones");
-		poblation.get(i).toConsoleMachineCell();
-		poblation.get(i).toConsolePartCell();
-		poblation.get(i).toConsoleFitness();
-		System.out.println("");
-
 	}
 
 	private void generarMovimiento(int tipoMovimiento, int poblacion) {
@@ -199,50 +193,22 @@ public class FlowerPollination {
 				// Check constraint
 				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
 						tempSolution.getMachine_cell(), tempSolution.getPart_cell());
-
-				//System.out.println("Solucion generada por levy");
-/*				for (int k = 0; k < data.M; k++) {
-					for (int l = 0; l < data.C; l++) {
-						System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
-					}
-					System.out.println();
-				}*/
-
-				// toConsoleBestSolution();
-				Scanner nc = new Scanner(System.in);
-				// nc.nextLine();
-
 				constraintOK = boctorModel.checkConstraint();
 
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
-					//System.out.println("ACEPTADA "+"FITNESS: "+tempFitness);
 					this.numAcceptedMoves++;
-					//nc.nextLine();
 					break;
 				} else {
-					//System.out.println("RECHAZADA mov 1");
 					constraintOK = repararSolucion();
-					/*
-					System.out.println(constraintOK);
-					System.out.println("SOLUCION REPARADA");
-					for (int k = 0; k < data.M; k++) {
-						for (int l = 0; l < data.C; l++) {
-							System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
-						}
-						System.out.println();
-					}*/					
 					if (constraintOK == false) {
 						tempSolution = poblation.get(poblacion);
-					}else{
+					} else {
 						tempFitness = boctorModel.calculateFitness();
 						break;
 					}
-					// System.out.println("RECHAZADA");
-					//tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
-				//nc.nextLine();
 			}
 		}
 		if (tipoMovimiento == 2) {
@@ -253,46 +219,20 @@ public class FlowerPollination {
 						tempSolution.getMachine_cell(), tempSolution.getPart_cell());
 				constraintOK = boctorModel.checkConstraint();
 
-				//System.out.println("Solucion generada localmente");
-/*				for (int k = 0; k < data.M; k++) {
-					for (int l = 0; l < data.C; l++) {
-						System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
-					}
-					System.out.println();
-				}*/
-
-				// toConsoleBestSolution();
-				Scanner nc = new Scanner(System.in);
-				// nc.nextLine();
-
 				if (constraintOK == true) {
 					tempFitness = boctorModel.calculateFitness();
-					//System.out.println("ACEPTADA FITNESS: "+tempFitness);
 					this.numAcceptedMoves++;
-					//nc.nextLine();
 					break;
-				} else {			
-					//System.out.println("RECHAZADA mov 2");
+				} else {
 					constraintOK = repararSolucion();
-					/*System.out.println("RECHAZADA");
-					System.out.println(constraintOK);
-					System.out.println("SOLUCION REPARADA");
-					for (int k = 0; k < data.M; k++) {
-						for (int l = 0; l < data.C; l++) {
-							System.out.print("[" + tempSolution.getMachine_cell()[k][l] + "]");
-						}
-						System.out.println();
-					}*/
 					if (constraintOK == false) {
 						tempSolution = poblation.get(poblacion);
-					}else{
+					} else {
 						tempFitness = boctorModel.calculateFitness();
 						break;
 					}
-					//tempSolution = poblation.get(poblacion);
 					this.numRejectedMoves++;
 				}
-				//nc.nextLine();
 			}
 		}
 	}
@@ -354,8 +294,7 @@ public class FlowerPollination {
 				}
 			}
 		}
-		for (int j = 0; j < data.P; j++)
-		{
+		for (int j = 0; j < data.P; j++) {
 			for (int k = 0; k < data.C; k++) {
 				tempSolution.getPart_cell()[j][k] = 0;
 			}
@@ -439,69 +378,43 @@ public class FlowerPollination {
 		return celda;
 	}
 
+	@SuppressWarnings("static-access")
 	private Solution generarPasoLevy(Solution tempSolution) {
 		Vuelo_levy L = new Vuelo_levy();
-		double step_levy, resultado, discretizacion;
+		double step_levy;
 		int[][] tempMachine_cell = new int[data.M][data.C];
-		int binarizacion;
 		int[] vectorMaquinaBest = new int[data.M];
 		int[] vectorMaquinaActual = new int[data.M];
-		
-		//System.out.println("FITNES TEMP SOLUTION: "+tempSolution.getFitness());
-		//Pasar a vector
+
+		// Pasar a vector
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
-				if(tempSolution.getMachine_cell()[i][j]==1){
-					vectorMaquinaActual[i] =j+1;
-				}					
-				if(bestSolution.getMachine_cell()[i][j]==1){
-					vectorMaquinaBest[i] = j+1;
-				}			
+				if (tempSolution.getMachine_cell()[i][j] == 1) {
+					vectorMaquinaActual[i] = j + 1;
+				}
+				if (bestSolution.getMachine_cell()[i][j] == 1) {
+					vectorMaquinaBest[i] = j + 1;
+				}
 			}
 		}
-		
+
 		do {
 			step_levy = L.levy_step(1.5, 1);
 		} while (Double.isNaN(step_levy));
 
-		/*double temp_machine_cell[][] = new double[data.M][data.C];
+		for (int i = 0; i < data.M; i++) {
+			vectorMaquinaActual[i] = aproximar(
+					vectorMaquinaActual[i] + step_levy * (vectorMaquinaBest[i] - vectorMaquinaActual[i]));
+		}
 
 		for (int i = 0; i < data.M; i++) {
-			for (int j = 0; j < data.C; j++) {
-				temp_machine_cell[i][j] = tempSolution.getMachine_cell()[i][j];
-			}
+			tempMachine_cell[i][vectorMaquinaActual[i] - 1] = 1;
 		}
-		/*resultado = subtraction(bestSolution,tempSolution);
-		resultado=resultado*step_levy;
-		tempSolution = addition(tempSolution,resultado);*/
 
-		//System.out.println("Antes Movimiento"+Arrays.toString(vectorMaquinaActual));
-		for (int i = 0; i < data.M; i++) {
-		//	System.out.println("Maquina actual "+vectorMaquinaActual[i]+" LEVY "+step_levy + " Best "+vectorMaquinaBest[i]+" Maquina "+vectorMaquinaActual[i]);
-			vectorMaquinaActual[i] = aproximar(vectorMaquinaActual[i] + step_levy*(vectorMaquinaBest[i]-vectorMaquinaActual[i]));
-		}
-		//System.out.println("Despu Movimiento"+Arrays.toString(vectorMaquinaActual));
-		
-		for (int i = 0; i < data.M; i++) {
-			tempMachine_cell[i][vectorMaquinaActual[i]-1]=1  ;
-
-		//	System.out.println("Solucion Convertida"+Arrays.toString(tempMachine_cell[i]));
-		}
-		
 		tempSolution.setMachine_cell(tempMachine_cell);
-		
-		/*for (int i = 0; i < data.M; i++) {
-			for (int j = 0; j < data.C; j++) {
-				resultado = temp_machine_cell[i][j]	+ step_levy * (bestSolution.getMachine_cell()[i][j] - temp_machine_cell[i][j]);			
-				discretizacion = VShaped.V2((float) resultado);
-				binarizacion = binarizacion(discretizacion);
-				tempSolution.getMachine_cell()[i][j] = binarizacion;
-				
-			}
-		}*/
 
 		// Posteriormente generamos manualmente la matriz PxC
-		for (int j = 0; j < data.P; j++){
+		for (int j = 0; j < data.P; j++) {
 			for (int k = 0; k < data.C; k++) {
 				tempSolution.getPart_cell()[j][k] = 0;
 			}
@@ -529,83 +442,57 @@ public class FlowerPollination {
 
 		return tempSolution;
 	}
-	private int aproximar(double movimiento){
+
+	private int aproximar(double movimiento) {
 		int aproximado;
-		aproximado=Math.round((float)movimiento);
-		if(aproximado<1){
+		aproximado = Math.round((float) movimiento);
+		if (aproximado < 1) {
 			aproximado = 1;
-		}else if(aproximado>data.C){
+		} else if (aproximado > data.C) {
 			aproximado = data.C;
 		}
-			
+
 		return aproximado;
 	}
 
 	private Solution generarPasoLocal(Solution tempSolution) {
-		double epsilon, resultado, discretizacion;
-		int randomPoblationK, randomPoblationJ, binarizacion;
+		double epsilon;
+		int randomPoblationK, randomPoblationJ;
 		randomPoblationK = rn.nextInt((numberPoblation - 1) - 0 + 1);
 		randomPoblationJ = rn.nextInt((numberPoblation - 1) - 0 + 1);
 		int[] vectorMaquinaRandomK = new int[data.M];
-		int[] vectorMaquinaRandomJ= new int[data.M];
-		int[] vectorMaquinaActual= new int[data.M];
-		int[][] tempMachine_cell = new int[data.M][data.C]; 
+		int[] vectorMaquinaRandomJ = new int[data.M];
+		int[] vectorMaquinaActual = new int[data.M];
+		int[][] tempMachine_cell = new int[data.M][data.C];
 		epsilon = rn.nextDouble();
-		
-		
-		for (int i = 0; i < data.M; i++) {
-			for (int j = 0; j < data.C; j++) {
-				if(poblation.get(randomPoblationK).getMachine_cell()[i][j]==1){
-					vectorMaquinaRandomK[i] =j+1;
-				}					
-				if(poblation.get(randomPoblationJ).getMachine_cell()[i][j]==1){
-					vectorMaquinaRandomJ[i] = j+1;
-				}	
-				if(tempSolution.getMachine_cell()[i][j]==1){
-					vectorMaquinaActual[i] = j+1;
-				}	
-			}
-		}
-		
-
-	/*	double temp_machine_cell[][] = new double[data.M][data.C];
 
 		for (int i = 0; i < data.M; i++) {
 			for (int j = 0; j < data.C; j++) {
-				temp_machine_cell[i][j] = tempSolution.getMachine_cell()[i][j];
+				if (poblation.get(randomPoblationK).getMachine_cell()[i][j] == 1) {
+					vectorMaquinaRandomK[i] = j + 1;
+				}
+				if (poblation.get(randomPoblationJ).getMachine_cell()[i][j] == 1) {
+					vectorMaquinaRandomJ[i] = j + 1;
+				}
+				if (tempSolution.getMachine_cell()[i][j] == 1) {
+					vectorMaquinaActual[i] = j + 1;
+				}
 			}
-		}*/
-		
-		/*resultado = subtraction(poblation.get(randomPoblationK),poblation.get(randomPoblationJ));
-		resultado=resultado*epsilon;
-		tempSolution = addition(tempSolution,resultado);*/
-	//	System.out.println("Antes movimiento"+Arrays.toString(vectorMaquinaActual));
-		
-		for (int i = 0; i < data.M; i++) {
-			//System.out.println("Maquina actual "+vectorMaquinaActual[i]+" Epsilon "+epsilon + " Maquina J "+vectorMaquinaRandomJ[i]+" maquina k "+vectorMaquinaRandomK[i]);
-			vectorMaquinaActual[i] = aproximar(vectorMaquinaActual[i] + epsilon*(vectorMaquinaRandomJ[i]-vectorMaquinaRandomK[i]));
 		}
 
-		//System.out.println("Despu Movimiento"+Arrays.toString(vectorMaquinaActual));
-		
 		for (int i = 0; i < data.M; i++) {
-			tempMachine_cell[i][vectorMaquinaActual[i]-1]=1  ;
+			vectorMaquinaActual[i] = aproximar(
+					vectorMaquinaActual[i] + epsilon * (vectorMaquinaRandomJ[i] - vectorMaquinaRandomK[i]));
 		}
-		
+
+		for (int i = 0; i < data.M; i++) {
+			tempMachine_cell[i][vectorMaquinaActual[i] - 1] = 1;
+		}
+
 		tempSolution.setMachine_cell(tempMachine_cell);
 
-		/*for (int i = 0; i < data.M; i++) {
-			for (int j = 0; j < data.C; j++) 
-				resultado = temp_machine_cell[i][j] + epsilon * (poblation.get(randomPoblationJ).getMachine_cell()[i][j]
-						- poblation.get(randomPoblationK).getMachine_cell()[i][j]);
-				discretizacion = VShaped.V2((float) resultado);
-				binarizacion = binarizacion(discretizacion);
-				tempSolution.getMachine_cell()[i][j] = binarizacion;
-			}
-		}*/
-
 		// Posteriormente generamos manualmente la matriz PxC
-		for (int j = 0; j < data.P; j++){
+		for (int j = 0; j < data.P; j++) {
 			for (int k = 0; k < data.C; k++) {
 				tempSolution.getPart_cell()[j][k] = 0;
 			}
@@ -621,7 +508,7 @@ public class FlowerPollination {
 				}
 				cellCount[k] = IntStream.of(tempPart).sum();
 			}
-			
+
 			int maxIndex = 0;
 			for (int i = 1; i < cellCount.length; i++) {
 				int newNumber = cellCount[i];
@@ -640,63 +527,55 @@ public class FlowerPollination {
 		 * double random = rn.nextDouble(); if (random <= numDiscreto) { return
 		 * 1; } return 0;
 		 */
-		if(numDiscreto>0.2
-				){
+		if (numDiscreto > 0.2) {
 			return 1;
 		}
-		//return Math.round((float) numDiscreto);
+		// return Math.round((float) numDiscreto);
 		return 0;
 	}
 
 	private void chooseBestSolutionInPoblation() {
 		// Escoger temporalmente el primer elemento como la mejor solucion.
-		double [][] maquina_celda = new double[data.M][data.C];
-		double [][] parte_celda = new double[data.P][data.C];
-		
-	
-		
-		
+		double[][] maquina_celda = new double[data.M][data.C];
+		double[][] parte_celda = new double[data.P][data.C];
+
 		bestSolution.setMachine_cell(poblation.get(0).getMachine_cell());
 		bestSolution.setPart_cell(poblation.get(0).getPart_cell());
 		bestSolution.setFitness(poblation.get(0).getFitness());
-		
-		
-		  for (int i = 0; i < data.M; i++){
-	        	for(int j = 0; j < data.C; j++){
-	        		maquina_celda[i][j]=poblation.get(0).getMachine_cell()[i][j];        		
-	        	}
-	        }
-		  
-		  for (int i = 0; i < data.P; i++)
-	        {
-	        	for(int j = 0; j <data.C; j++){
-	        		parte_celda[i][j]=poblation.get(0).getPart_cell()[i][j];
-	        	}
-	        }
-		  
-		  bestSolution.setDoubleMachine_cell(maquina_celda);
-		  bestSolution.setDoublePart_cell(parte_celda);
-		
-		  
+
+		for (int i = 0; i < data.M; i++) {
+			for (int j = 0; j < data.C; j++) {
+				maquina_celda[i][j] = poblation.get(0).getMachine_cell()[i][j];
+			}
+		}
+
+		for (int i = 0; i < data.P; i++) {
+			for (int j = 0; j < data.C; j++) {
+				parte_celda[i][j] = poblation.get(0).getPart_cell()[i][j];
+			}
+		}
+
+		bestSolution.setDoubleMachine_cell(maquina_celda);
+		bestSolution.setDoublePart_cell(parte_celda);
+
 		for (int i = 1; i < numberPoblation; i++) {
 			if (poblation.get(i).getFitness() < bestSolution.getFitness()) {
 				// Escoger una nueva mejor solucion
 				bestSolution.setMachine_cell(poblation.get(i).getMachine_cell());
 				bestSolution.setPart_cell(poblation.get(i).getPart_cell());
 				bestSolution.setFitness(poblation.get(i).getFitness());
-			  for (int k = 0; k < data.M; k++){
-		        	for(int j = 0; j < data.C; j++){
-		        		maquina_celda[k][j]=poblation.get(i).getMachine_cell()[k][j];        		
-		        	}
-		        }				  
-			  for (int k = 0; k < data.P; k++)
-		        {
-		        	for(int j = 0; j < data.C; j++){
-		        		parte_celda[k][j]=poblation.get(i).getPart_cell()[k][j];
-		        	}
-		        }
-			  bestSolution.setDoubleMachine_cell(maquina_celda);
-			  bestSolution.setDoublePart_cell(parte_celda);
+				for (int k = 0; k < data.M; k++) {
+					for (int j = 0; j < data.C; j++) {
+						maquina_celda[k][j] = poblation.get(i).getMachine_cell()[k][j];
+					}
+				}
+				for (int k = 0; k < data.P; k++) {
+					for (int j = 0; j < data.C; j++) {
+						parte_celda[k][j] = poblation.get(i).getPart_cell()[k][j];
+					}
+				}
+				bestSolution.setDoubleMachine_cell(maquina_celda);
+				bestSolution.setDoublePart_cell(parte_celda);
 			}
 		}
 	}
@@ -711,129 +590,24 @@ public class FlowerPollination {
 	public void toConsoleFinalReport() {
 		System.out.println("===============================");
 		System.out.println(">> Reporte final");
-		
+
 		toConsoleBestSolution();
 		System.out.println(">> Numero de movimientos aceptados: " + this.numAcceptedMoves);
 		System.out.println(">> Numero de movimientos fallados : " + this.numRejectedMoves);
-		/*MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
-				this.bestSolution.getMachine_cell(), this.bestSolution.getPart_cell());
-		boctorModel.convertToFinalMatrix();*/
-
-		/*
-		 * for (int i = 0; i < data.M; i++) { for (int a = 0; a <
-		 * numberPoblation; a++) { for (int j = 0; j < data.C; j++) {
-		 * System.out.print("[" + poblation.get(a).getMachine_cell()[i][j] +
-		 * "]"); } System.out.print(" || "); } System.out.println(); }
-		 */
 	}
 
-	public double subtraction(Solution solution1, Solution solution2) {
-		//System.out.println("Subtraccion");
-		// Realizar la resta de g* - xi(t)
-		// g* = MxC, PxC
-		// xi(t) = MxC, PxC
-		// Para ello definimos el valor de la resta generada como h. La resta es
-		// la distancia entre las matrices.
-		// g* - xi = h
-		// h(MxC) = g*(MxC) - xi(MxC)
-		// h(PxC) = g*(PxC) - xi(PxC)
-		double[][] temp_gMxC = solution1.getDoubleMachine_cell();
-		double[][] temp_gPxC = solution1.getDoublePart_cell();
-		double[][] temp_xiMxC = solution2.getDoubleMachine_cell();
-		double[][] temp_xiPxC = solution2.getDoublePart_cell();
-		RealMatrix gPxC = new Array2DRowRealMatrix(temp_gPxC);
-		RealMatrix gMxC = new Array2DRowRealMatrix(temp_gMxC);		
-		RealMatrix xiMxC = new Array2DRowRealMatrix(temp_xiMxC);
-		RealMatrix xiPxC = new Array2DRowRealMatrix(temp_xiPxC); // La distancia
-																	// entre dos
-																	// matrices.
-		// Step 1. gMxC - xiMxC, gPxC - xiMxC
-		RealMatrix hMxC = gMxC.subtract(xiMxC);
-		RealMatrix hPxC = gPxC.subtract(xiPxC); // Step 2. Multiplicamos por
-												// h*h_transpuesta
-		hMxC = hMxC.multiply(hMxC.transpose());
-		hPxC = hPxC.multiply(hPxC.transpose()); // Step 3. // Calculamos la
-												// traza (Sumamos la diagonal)
-		double trazaMxC = hMxC.getTrace();
-		double trazaPxC = hPxC.getTrace(); // Determinamos la distancia -
-											// Determinamos la raiz
-		double distanceMxC = Math.sqrt(trazaMxC);
-		double distancePxC = Math.sqrt(trazaPxC);
-
-		return distanceMxC + distancePxC;
-	}
-
-	public Solution addition(Solution solution, double value) {
-		//System.out.println("Adicion");
-		// Realizar el cambio de maquina n veces, n = value, value = levy *
-		// valor de la resta;
-		int[][] machine_cell = new int[data.getM()][data.getC()];
-		int[][] original_machine_cell = new int[data.getM()][data.getC()];
-		int machines = solution.getMachine_cell().length;
-		int cells = solution.getMachine_cell()[0].length;
-
-		for (int i = 0; i < machines; i++) {
-			for (int k = 0; k < cells; k++) {
-				original_machine_cell[i][k] = solution.getMachine_cell()[i][k];
-			}
-		}
-		// Copy original values
-		for (int i = 0; i < data.getM(); i++) {
-			System.arraycopy(original_machine_cell[i], 0, machine_cell[i], 0, data.getC());
-		}
-		int times = 0;
-		int val = (int) value;
-		if(val>500000){
-			val=500000;
-		}
-		while (times < val) {// Random machine
-			//System.out.println("times: "+times+" val: "+val+" value: "+value);
-			Random rm = new Random();
-			int randomMachine = rm.nextInt(machines - 0) + 0; // Clear row
-			for (int k = 0; k < cells; k++) {
-				machine_cell[randomMachine][k] = 0;
-			} // Random cell
-			Random rc = new Random();
-			int randomCell = rc.nextInt(cells - 0) + 0;// Puts new value 1 in
-			// new randomic cell
-			machine_cell[randomMachine][randomCell] = 1;// aumentamos la
-			// iteracion
-			times++;
-		}
-		/** * hacer ahora partexcelda */ // Se crea la matriz pieza×celda para
-		// el momento en que se necesita
-		int[][] part_cell = new int[data.getP()][data.getC()];
-		for (int j = 0; j < data.getP(); j++) { // Rellenar la matriz
-			// pieza×celda de "0"
-			for (int k = 0; k < data.getC(); k++) {
-				part_cell[j][k] = 0;
-			}
-		}
-		for (int j = 0; j < data.getP(); j++) {
-			int[] tempPart = new int[data.getM()];
-			int[] cellCount = new int[data.getC()];
-			for (int k = 0; k < data.getC(); k++) {
-				for (int i = 0; i < data.getM(); i++) {// Esto hace una
-					// multiplicación para
-					// revisar si: P(j) es
-					// subconjunto de C(k)
-					tempPart[i] = solution.getMachine_cell()[i][k] * data.getA()[i][j];
-				}
-				cellCount[k] = IntStream.of(tempPart).sum();
-			} // Extraer el índice de la posición con el número más grande.
-			int maxIndex = 0;
-			for (int i = 1; i < cellCount.length; i++) {
-				int newNumber = cellCount[i];
-				if ((newNumber > cellCount[maxIndex])) {
-					maxIndex = i;
-				}
-			} // Puts un 1 in the new cell
-			part_cell[j][maxIndex] = 1;
-		}
-		// toConsole("getRandomMove2", machine_cell, part_cell);
-		return new Solution(machine_cell, part_cell);
-	}
-	public Solution getBestSolution(){
+	public Solution getBestSolution() {
 		return bestSolution;
+	}
+
+	@SuppressWarnings("unused")
+	private void toConsoleSingleSolutio(int i) {
+
+		System.out.println(i + "Poblacion del vector soluciones");
+		poblation.get(i).toConsoleMachineCell();
+		poblation.get(i).toConsolePartCell();
+		poblation.get(i).toConsoleFitness();
+		System.out.println("");
+
 	}
 }
