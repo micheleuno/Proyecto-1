@@ -20,7 +20,8 @@ public class Convert
 		
 		if (tokenCount != (rows * columns))
 		{
-			System.out.println("Error in matrix size");
+			
+			System.out.println("Error in matrix size"+" TOkens count: "+tokenCount +" Row "+rows+" columns "+columns);
 			return null;
 		}
 		

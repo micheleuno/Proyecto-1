@@ -41,7 +41,7 @@ public class PropertiesRead
 		String sum = prop.getProperty("Sum");
 		String matrix = prop.getProperty("Matrix");
 		
-		//System.out.println(result + "\nMachines "+machines+" Parts "+parts+" Matrix "+matrix);
+		//System.out.println(" nombre "+fileName/*+ "\nMachines "+machines+" Parts "+parts+" Matrix "+matrix */);
 		
 		hashTable.put("Machines", machines);
 		hashTable.put("Parts", parts);
