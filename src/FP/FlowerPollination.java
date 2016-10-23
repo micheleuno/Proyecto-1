@@ -59,7 +59,6 @@ public class FlowerPollination {
 		calcularSimilitudMaquinas();
 		generateInitialPoblation();
 		chooseBestSolutionInPoblation();
-
 		// Metaheuristic cycle
 		int iteration = 0;
 		rn = new Random();
@@ -148,17 +147,18 @@ public class FlowerPollination {
 			while (constraintOK == false) {
 				// Create random solution
 				randomSolution.createRandomSolution();
-
 				// Check constraint
 				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
 						randomSolution.getMachine_cell(), randomSolution.getPart_cell());
 				constraintOK = boctorModel.checkConstraint();
 
 				if (constraintOK == true) {
+					//System.out.println("Paso");
 					randomSolutionFitness = boctorModel.calculateFitness();
 					this.numAcceptedMoves++;
 					break;
 				} else {
+					//System.out.println("Error");
 					this.numRejectedMoves++;
 				}
 			}

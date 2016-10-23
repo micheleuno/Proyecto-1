@@ -24,7 +24,7 @@ public class Main {
 		int numberIteration = 100;
 		float delta = 1.5f;
 		float switch_probability = 0.1f;
-		int executions = 3;
+		int executions = 31;
 		int best_fitness = 999999999;
 		float mean_fitness = 0f;
 		int optimal_global = 0;
@@ -34,7 +34,7 @@ public class Main {
 
 		log.info("Read all filenames");
 		Benchmark benchmark = new Benchmark();
-		ArrayList<String> dataFiles = benchmark.readSetFileBenchmark("/resources/MBO_MCDP_BENCHMARK_FILES--boctor.txt");
+		ArrayList<String> dataFiles = benchmark.readSetFileBenchmark("/resources/MCDP_BENCHMARK_FILES.txt");
 
 		ArrayList<MCDPData> modelSet = benchmark.getSetModelsByNames(dataFiles);
 		System.out.println("Read all filenames");
@@ -96,7 +96,7 @@ public class Main {
 			mean_fitness = mean_fitness / executions;
 			System.out.println("Mean Best Fitness:[" + mean_fitness + "] " + "Best Solution: [" + best_fitness + "]");
 			Statistics.createTable(numIteracion, model.mmax, model.getBestSGlobal(), best_fitness, mean_fitness,
-					model.getIdentificator(), currentDirectory);
+					model.getIdentificator(), currentDirectory,model.getC());
 			mean_fitness = 0;
 			best_fitness = 999999999;
 			numIteracion++;
