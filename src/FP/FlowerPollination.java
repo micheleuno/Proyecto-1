@@ -106,6 +106,9 @@ public class FlowerPollination {
 				if(backFitness==bestSolution.getFitness()){
 					for(int i=0;i<poblationIncrease;i++){
 						addRandomSolutionToPoblation();
+						System.out.println("==========================================================");
+						System.out.println("[Aumento de la poblacion en"+poblationIncrease+"]");
+						System.out.println("==========================================================");
 					}
 				}
 				/*
