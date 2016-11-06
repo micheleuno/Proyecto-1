@@ -28,6 +28,7 @@ public class FlowerPollination {
 	
 	int backFitness=0;
 	int iterationAutonomousSearch=5;
+	int poblationIncrease=5;
 
 	private int matrizSimilitud[][];
 
@@ -101,12 +102,20 @@ public class FlowerPollination {
 			if(contAutonomousSearch==iterationAutonomousSearch){
 				System.out.println("ENTRAMOS");
 				System.out.println("Back Fitness: "+backFitness+" Best Fitness Actual: "+bestSolution.getFitness());
+				
+				if(backFitness==bestSolution.getFitness()){
+					for(int i=0;i<poblationIncrease;i++){
+						addRandomSolutionToPoblation();
+					}
+				}
+				/*
 				if(backFitness==bestSolution.getFitness()&&1f>switchProbability){
 					switchProbability = switchProbability+0.1f;
 					System.out.println("==========================================================");
 					System.out.println("[Cambio de Probabilidad: "+switchProbability+"]");
 					System.out.println("==========================================================");
 				}
+				*/
 				contAutonomousSearch=0;
 				backFitness = bestSolution.getFitness();
 			}else{
@@ -195,6 +204,41 @@ public class FlowerPollination {
 			// Add Solution in poblation
 			poblation.add(s);
 		}
+	}
+	
+	private void addRandomSolutionToPoblation(){
+		boolean constraintOK = false;
+		// crear una solucion segun los datos leidos
+		MCDPRandomSolution randomSolution = new MCDPRandomSolution(data.A, data.M, data.P, data.C, data.mmax);
+		int randomSolutionFitness = 0;
+
+		// Estoy en el ciclo hasta generar una solucion randomica que
+		// satisfaga las restricciones
+		while (constraintOK == false) {
+			// Create random solution
+			randomSolution.createRandomSolution();
+			// Check constraint
+			MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
+					randomSolution.getMachine_cell(), randomSolution.getPart_cell());
+			constraintOK = boctorModel.checkConstraint();
+
+			if (constraintOK == true) {
+				//System.out.println("Paso");
+				randomSolutionFitness = boctorModel.calculateFitness();
+				this.numAcceptedMoves++;
+				break;
+			} else {
+				//System.out.println("Error");
+				this.numRejectedMoves++;
+			}
+		}
+
+		// Create Solution
+		Solution s = new Solution(randomSolution.getMachine_cell(), randomSolution.getPart_cell(),
+				randomSolutionFitness);
+
+		// Add Solution in poblation
+		poblation.add(s);
 	}
 
 	@SuppressWarnings("unused")
