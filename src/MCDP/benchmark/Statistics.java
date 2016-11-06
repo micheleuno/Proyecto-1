@@ -54,7 +54,7 @@ public class Statistics {
 			String nomb_autor = dato[1];
 			double RPD = 0;
 			if(bestGlobal!=0){
-				RPD = ((bestFitness - bestGlobal) / bestGlobal) * 100;
+				RPD = ((double)(bestFitness - bestGlobal) / bestGlobal)*100;
 			}
 			String directory = "Sumary [" + directoryName + "].xls";
 			File file = new File(directory);

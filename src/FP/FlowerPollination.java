@@ -18,12 +18,16 @@ public class FlowerPollination {
 	@SuppressWarnings("unused")
 	private double delta;
 	private double switchProbability;
+	
 	private int vector_fitness[];
 	Grafico grafico = null;
 	private String directoryName = null;
 	private ArrayList<Solution> poblation; // Un arreglo de soluciones
 	private Solution bestSolution, tempSolution; // Mejor Solucion
 	int tempFitness = 0;
+	
+	int backFitness=0;
+	int iterationAutonomousSearch=5;
 
 	private int matrizSimilitud[][];
 
@@ -61,6 +65,7 @@ public class FlowerPollination {
 		chooseBestSolutionInPoblation();
 		// Metaheuristic cycle
 		int iteration = 0;
+		int contAutonomousSearch = 0;
 		rn = new Random();
 
 		while (iteration < this.numberIteration) {
@@ -91,6 +96,26 @@ public class FlowerPollination {
 
 			chooseBestSolutionInPoblation();
 			vector_fitness[iteration] = bestSolution.getFitness();
+			
+			//Autonomous Search-----------------------------------//
+			if(contAutonomousSearch==iterationAutonomousSearch){
+				System.out.println("ENTRAMOS");
+				System.out.println("Back Fitness: "+backFitness+" Best Fitness Actual: "+bestSolution.getFitness());
+				if(backFitness==bestSolution.getFitness()&&1f>switchProbability){
+					switchProbability = switchProbability+0.1f;
+					System.out.println("==========================================================");
+					System.out.println("[Cambio de Probabilidad: "+switchProbability+"]");
+					System.out.println("==========================================================");
+				}
+				contAutonomousSearch=0;
+				backFitness = bestSolution.getFitness();
+			}else{
+				if(contAutonomousSearch==0){//Cuando inicia el algoritmo
+					backFitness = bestSolution.getFitness();
+				}
+			}
+			contAutonomousSearch++;
+			//Autonomous Search-----------------------------------//
 			iteration++;
 		}
 
