@@ -29,6 +29,8 @@ public class Main {
 		float mean_fitness = 0f;
 		int optimal_global = 0;
 		int numIteracion = 0;
+		int iterationOpt = 0;
+		float iterationOptAvg = 0f;
 
 		Logger log = Logger.getLogger(Main.class);
 
@@ -84,8 +86,8 @@ public class Main {
 				FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, model, delta,
 						switch_probability, directory);
 
-				metaheuristic.run();
-
+				iterationOpt = metaheuristic.run();
+				iterationOptAvg = iterationOpt + iterationOptAvg;
 				Solution bestSolution = metaheuristic.getBestSolution();
 				mean_fitness = mean_fitness + bestSolution.getFitness();
 				if (best_fitness > bestSolution.getFitness()) {
@@ -94,9 +96,10 @@ public class Main {
 
 			}
 			mean_fitness = mean_fitness / executions;
+			iterationOptAvg = iterationOptAvg / executions;
 			System.out.println("Mean Best Fitness:[" + mean_fitness + "] " + "Best Solution: [" + best_fitness + "]");
 			Statistics.createTable(numIteracion, model.mmax, model.getBestSGlobal(), best_fitness, mean_fitness,
-					model.getIdentificator(), currentDirectory,model.getC());
+					model.getIdentificator(), currentDirectory,model.getC(),iterationOptAvg);
 			mean_fitness = 0;
 			best_fitness = 999999999;
 			numIteracion++;

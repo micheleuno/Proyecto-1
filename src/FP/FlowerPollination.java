@@ -1,5 +1,6 @@
 package FP;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -59,13 +60,15 @@ public class FlowerPollination {
 		this.directoryName = directory;
 	}
 
-	public void run() {
+	public int run() {
 		matrizSimilitud = new int[data.M][data.M];
 		calcularSimilitudMaquinas();
 		generateInitialPoblation();
 		chooseBestSolutionInPoblation();
 		// Metaheuristic cycle
 		int iteration = 0;
+		int iterationOpt = 0;
+		int optimo = 9999999;
 		int contAutonomousSearch = 0;
 		rn = new Random();
 
@@ -100,16 +103,18 @@ public class FlowerPollination {
 			
 			//Autonomous Search-----------------------------------//
 			if(contAutonomousSearch==iterationAutonomousSearch){
-				System.out.println("ENTRAMOS");
-				System.out.println("Back Fitness: "+backFitness+" Best Fitness Actual: "+bestSolution.getFitness());
+				//System.out.println("ENTRAMOS");
+				//System.out.println("Back Fitness: "+backFitness+" Best Fitness Actual: "+bestSolution.getFitness());
 				
-				if(backFitness==bestSolution.getFitness()){
-					for(int i=0;i<poblationIncrease;i++){
+				if(backFitness==bestSolution.getFitness()&&bestSolution.getFitness()>data.getBestSGlobal()){
+					switchProbability = switchProbability+0.1f;
+					/*for(int i=0;i<poblationIncrease;i++){
 						addRandomSolutionToPoblation();
-						System.out.println("==========================================================");
-						System.out.println("[Aumento de la poblacion en"+poblationIncrease+"]");
-						System.out.println("==========================================================");
-					}
+						
+					}*/
+				/*	System.out.println("==========================================================");
+					System.out.println("[Aumento de la poblacion en"+poblation.size()+"]");
+					System.out.println("==========================================================");*/
 				}
 				/*
 				if(backFitness==bestSolution.getFitness()&&1f>switchProbability){
@@ -129,10 +134,20 @@ public class FlowerPollination {
 			contAutonomousSearch++;
 			//Autonomous Search-----------------------------------//
 			iteration++;
+			if(optimo> bestSolution.getFitness()){
+				optimo=bestSolution.getFitness();
+				iterationOpt=iteration;				
+			}
 		}
 
 		// Crear excels con datos para grafico convergencia
-		Statistics.createConvergenciGraph(data.getIdentificator(), vector_fitness, directoryName);
+		
+		File excel = new File(directoryName);
+		if(!excel.exists()){
+			Statistics.createConvergenciGraph(data.getIdentificator(), vector_fitness, directoryName);
+		}
+		return iterationOpt;
+		
 		// Descomentar para crear grafico java
 		/*
 		  grafico = new Grafico(vector_fitness,

@@ -16,7 +16,7 @@ public class Statistics {
 
 			HSSFWorkbook workbook = new HSSFWorkbook();
 			HSSFSheet sheet = workbook.createSheet("Hoja 1");
-
+			
 			int fila = 0;
 			Row row;
 			Cell cell;
@@ -47,7 +47,7 @@ public class Statistics {
 	}
 
 	public static void createTable(int fila, int mmax, int bestGlobal, int bestFitness, float meanFitness,
-			String nProblema, String directoryName, int numCell) {
+			String nProblema, String directoryName, int numCell, float iterationOptAvg) {
 		try {
 			String dato[] = nProblema.split("_");
 			String num_problema = dato[2].substring(dato[2].length() - 2);
@@ -83,6 +83,8 @@ public class Statistics {
 				cell.setCellValue(meanFitness);
 				cell = row.createCell(7);
 				cell.setCellValue(RPD);
+				cell = row.createCell(8);
+				cell.setCellValue(iterationOptAvg);
 
 				FileOutputStream out = new FileOutputStream(new File("Sumary [" + directoryName + "].xls"));
 				workbook.write(out);
@@ -113,6 +115,8 @@ public class Statistics {
 				cell.setCellValue("Mean Fitness");
 				cell = row.createCell(7);
 				cell.setCellValue("RPD");
+				cell = row.createCell(8);
+				cell.setCellValue("Iteration");
 
 				row = sheet.createRow(fila + 1);
 
@@ -132,7 +136,9 @@ public class Statistics {
 				cell.setCellValue(meanFitness);
 				cell = row.createCell(7);
 				cell.setCellValue(RPD);
-
+				cell = row.createCell(8);
+				cell.setCellValue(iterationOptAvg);
+				
 				FileOutputStream out = new FileOutputStream(new File("Sumary [" + directoryName + "].xls"));
 				workbook.write(out);
 				out.close();
