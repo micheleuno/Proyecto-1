@@ -32,7 +32,9 @@ public class FlowerPollination {
 	int poblationIncrease=5;
 
 	private int matrizSimilitud[][];
-
+	private int modo = 0; //variable Autonomous Search
+	private float nivelModo0 = 0f;//variable Autonomous Search
+	private float nivelModo1 = 0f;//variable Autonomous Search
 	// Dataset (benchmark)
 	private MCDPData data;
 
@@ -70,6 +72,7 @@ public class FlowerPollination {
 		int iterationOpt = 0;
 		int optimo = 9999999;
 		int contAutonomousSearch = 0;
+		int iterationEstancada = 0;
 		rn = new Random();
 
 		while (iteration < this.numberIteration) {
@@ -107,7 +110,7 @@ public class FlowerPollination {
 				//System.out.println("Back Fitness: "+backFitness+" Best Fitness Actual: "+bestSolution.getFitness());
 				
 				if(backFitness==bestSolution.getFitness()&&bestSolution.getFitness()>data.getBestSGlobal()){
-					switchProbability = switchProbability+0.1f;
+					//switchProbability = switchProbability+0.1f;
 					/*for(int i=0;i<poblationIncrease;i++){
 						addRandomSolutionToPoblation();
 						
@@ -133,11 +136,17 @@ public class FlowerPollination {
 			}
 			contAutonomousSearch++;
 			//Autonomous Search-----------------------------------//
+			
 			iteration++;
 			if(optimo> bestSolution.getFitness()){
 				optimo=bestSolution.getFitness();
-				iterationOpt=iteration;				
+				iterationOpt=iteration;	
+				iterationEstancada=0;
+			}else{
+				iterationEstancada++;
 			}
+			iterationEstancada=AutonomousSearchSwitch(iterationEstancada);
+				
 		}
 
 		// Crear excels con datos para grafico convergencia
@@ -157,6 +166,41 @@ public class FlowerPollination {
 		  sc.nextLine();
 		  */
 		 
+	}
+	public int AutonomousSearchSwitch(int iteraciones){
+		int CantIntEstan = 4;
+		int CantModoEstan = 4;
+		float step=0.2f;
+		switch (modo){
+		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability+step<=1f){ //aumentar el switch de probabilidad
+				nivelModo0=nivelModo0+step;
+				switchProbability = switchProbability+step;
+			//System.out.println("Entró en modo 0" );
+
+				}
+				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+					modo=1;						 //Se cambia al modo de disminuir
+					iteraciones=0;
+				}
+								break;
+		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability-step>=0.1f){ //aumentar el switch de probabilidad
+			nivelModo1=nivelModo1-step;
+			switchProbability = switchProbability-step;
+		//	System.out.println("Entró en modo 1" );
+			}
+			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+				modo=0;						 //Se cambia al modo de disminuir
+				iteraciones=0;
+			}
+			
+			break;
+		}
+				
+		
+		
+		//System.out.println("Iteracion estancada: "+iteraciones+" switch: "+switchProbability+" modo: "+modo);
+		return iteraciones;
+		
 	}
 
 	public void calcularSimilitudMaquinas() {
