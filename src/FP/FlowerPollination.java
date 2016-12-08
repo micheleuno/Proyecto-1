@@ -33,8 +33,7 @@ public class FlowerPollination {
 
 	private int matrizSimilitud[][];
 	private int modo = 0; //variable Autonomous Search
-	private float nivelModo0 = 0f;//variable Autonomous Search
-	private float nivelModo1 = 0f;//variable Autonomous Search
+	
 	// Dataset (benchmark)
 	private MCDPData data;
 
@@ -72,7 +71,8 @@ public class FlowerPollination {
 		int iterationOpt = 0;
 		int optimo = 9999999;
 		int contAutonomousSearch = 0;
-		int iterationEstancada = 0;
+		int iterationEstancadaPoblation = 0;
+		int iterationEstancadaSwitch = 0;
 		rn = new Random();
 
 		while (iteration < this.numberIteration) {
@@ -80,7 +80,7 @@ public class FlowerPollination {
 			// ")");
 			// toConsolePoblation();
 			// toConsoleBestSolution();
-
+			numberPoblation=poblation.size();
 			for (int i = 0; i < numberPoblation; i++) {
 				// toConsoleSingleSolutio(i);
 				d = rn.nextDouble(); // random value in range 0.0 - 1.0
@@ -99,6 +99,7 @@ public class FlowerPollination {
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
 					poblation.get(i).setFitness(tempFitness);
 				}
+				
 			}
 
 			chooseBestSolutionInPoblation();
@@ -141,12 +142,14 @@ public class FlowerPollination {
 			if(optimo> bestSolution.getFitness()){
 				optimo=bestSolution.getFitness();
 				iterationOpt=iteration;	
-				iterationEstancada=0;
+				iterationEstancadaSwitch = 0;
+				iterationEstancadaPoblation = 0;
 			}else{
-				iterationEstancada++;
+				iterationEstancadaSwitch++;
+				iterationEstancadaPoblation++;
 			}
-			iterationEstancada=AutonomousSearchSwitch(iterationEstancada);
-				
+			iterationEstancadaSwitch=AutonomousSearchSwitch(iterationEstancadaSwitch);//llamada a autonomous search
+			//iterationEstancadaPoblation=AutonomousSearchPoblation(iterationEstancadaPoblation);
 		}
 
 		// Crear excels con datos para grafico convergencia
@@ -168,25 +171,20 @@ public class FlowerPollination {
 		 
 	}
 	public int AutonomousSearchSwitch(int iteraciones){
-		int CantIntEstan = 4;
-		int CantModoEstan = 4;
-		float step=0.2f;
+		int CantIntEstan = 2;
+		int CantModoEstan = 2;
+		float step=0.05f; //cantidad de población que se añade
 		switch (modo){
 		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability+step<=1f){ //aumentar el switch de probabilidad
-				nivelModo0=nivelModo0+step;
-				switchProbability = switchProbability+step;
-			//System.out.println("Entró en modo 0" );
-
+				switchProbability = switchProbability+step;	
 				}
 				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
 					modo=1;						 //Se cambia al modo de disminuir
 					iteraciones=0;
 				}
 								break;
-		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability-step>=0.1f){ //aumentar el switch de probabilidad
-			nivelModo1=nivelModo1-step;
-			switchProbability = switchProbability-step;
-		//	System.out.println("Entró en modo 1" );
+		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability-step>=0.1f){ //disminuir el switch de probabilidad
+			switchProbability = switchProbability-step;		
 			}
 			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
 				modo=0;						 //Se cambia al modo de disminuir
@@ -195,10 +193,42 @@ public class FlowerPollination {
 			
 			break;
 		}
-				
-		
-		
 		//System.out.println("Iteracion estancada: "+iteraciones+" switch: "+switchProbability+" modo: "+modo);
+		return iteraciones;
+		
+	}
+	
+	
+	public int AutonomousSearchPoblation(int iteraciones){
+		int CantIntEstan = 5;
+		int CantModoEstan = 5;
+		int step = 5;//cantidad de población que se añade
+		switch (modo){
+		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan){ //aumentar la poblacion
+				//	System.out.println("Modo 0");
+					for(int i=0;i<step;i++){
+						addRandomSolutionToPoblation();	
+					}
+				}
+				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+					modo=1;						 //Se cambia al modo de disminuir
+					iteraciones=0;
+				}
+								break;
+		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan){ //disminuir la poblacion
+			//System.out.println("Modo 1");
+				for(int i=0;i<step;i++){
+					deleteRandomSolutionToPoblation();	
+				}
+			}
+			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+				modo=0;						 //Se cambia al modo de disminuir
+				iteraciones=0;
+			}
+			
+			break;
+		}
+		//System.out.println("Iteracion estancada: "+iteraciones+" switch: "+switchProbability+" modo: "+modo+" Poblacion: "+poblation.size()+" fitness: "+bestSolution.getFitness());
 		return iteraciones;
 		
 	}
@@ -302,6 +332,23 @@ public class FlowerPollination {
 		// Add Solution in poblation
 		poblation.add(s);
 	}
+	
+	private void deleteRandomSolutionToPoblation(){
+		  Random randomGenerator = new Random();
+		 int randomInt = randomGenerator.nextInt(poblation.size());
+		
+		 do{
+			// System.out.println("deleting");
+			 if(poblation.get(randomInt)!=bestSolution){
+				// System.out.println("Best solution: "+bestSolution+ " solucion eliminada: "+poblation.get(randomInt).getFitness()+" Random: "+randomInt);
+				 poblation.remove(randomInt);
+				 
+			 }
+				 
+			 randomInt = randomGenerator.nextInt(poblation.size());
+		 }while(poblation.get(randomInt)==bestSolution);
+	}
+	
 
 	@SuppressWarnings("unused")
 	private void toConsolePoblation() {
