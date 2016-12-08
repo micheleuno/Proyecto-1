@@ -1,3 +1,4 @@
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -113,7 +114,7 @@ public class Main {
 			System.out.println("Process End: " + sdf.format(resultdate2));
 			System.out.println("==========================================================");
 		}
-
+		Toolkit.getDefaultToolkit().beep();;
 	}
 
 	public static int obtenerOptimo(String directorio) throws IOException {
