@@ -622,14 +622,18 @@ public class FlowerPollination {
 	}
 
 	private int aproximar(double movimiento) {
-		int aproximado;
+		int aproximado = 0;
+		
+		aproximado = IntervalDiscretization.IntervalDoubleValue(SShaped.S4(movimiento), data.C, 0, 1)+1;
+		//System.out.println("VALOR MOVIMIENTO: ("+movimiento+") APROXIMADO("+aproximado+")");
+		/*
 		aproximado = Math.round((float) movimiento);
 		if (aproximado < 1) {
 			aproximado = 1;
 		} else if (aproximado > data.C) {
 			aproximado = data.C;
 		}
-
+		 */
 		return aproximado;
 	}
 
