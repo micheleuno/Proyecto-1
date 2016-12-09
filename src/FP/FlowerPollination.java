@@ -32,8 +32,9 @@ public class FlowerPollination {
 	int poblationIncrease=5;
 
 	private int matrizSimilitud[][];
-	private int modo = 0; //variable Autonomous Search
-	
+	private int modoSwitch = 0; //variable Autonomous Search
+	private int modoPoblation = 0;
+	private int modoDelta = 1;
 	// Dataset (benchmark)
 	private MCDPData data;
 
@@ -73,6 +74,7 @@ public class FlowerPollination {
 		int contAutonomousSearch = 0;
 		int iterationEstancadaPoblation = 0;
 		int iterationEstancadaSwitch = 0;
+		int iterationEstancadaDelta = 0;
 		rn = new Random();
 
 		while (iteration < this.numberIteration) {
@@ -80,11 +82,12 @@ public class FlowerPollination {
 			// ")");
 			// toConsolePoblation();
 			// toConsoleBestSolution();
+		
 			numberPoblation=poblation.size();
 			for (int i = 0; i < numberPoblation; i++) {
 				// toConsoleSingleSolutio(i);
 				d = rn.nextDouble(); // random value in range 0.0 - 1.0
-
+				
 				tempSolution = new Solution(poblation.get(i).getMachine_cell(), poblation.get(i).getPart_cell(),
 						poblation.get(i).getFitness());
 
@@ -93,7 +96,7 @@ public class FlowerPollination {
 				} else {
 					generarMovimiento(2, i);
 				}
-
+				
 				if (tempFitness < poblation.get(i).getFitness()) {
 					poblation.get(i).setMachine_cell(tempSolution.getMachine_cell());
 					poblation.get(i).setPart_cell(tempSolution.getPart_cell());
@@ -142,22 +145,24 @@ public class FlowerPollination {
 			if(optimo> bestSolution.getFitness()){
 				optimo=bestSolution.getFitness();
 				iterationOpt=iteration;	
-				iterationEstancadaSwitch = 0;
-				iterationEstancadaPoblation = 0;
+				iterationEstancadaSwitch = iterationEstancadaPoblation=iterationEstancadaDelta=0;
+				
 			}else{
 				iterationEstancadaSwitch++;
 				iterationEstancadaPoblation++;
+				iterationEstancadaDelta++;
 			}
-			iterationEstancadaSwitch=AutonomousSearchSwitch(iterationEstancadaSwitch);//llamada a autonomous search
-			//iterationEstancadaPoblation=AutonomousSearchPoblation(iterationEstancadaPoblation);
+			//iterationEstancadaSwitch=AutonomousSearchSwitch(iterationEstancadaSwitch);//llamada a autonomous search
+			iterationEstancadaPoblation=AutonomousSearchPoblation(iterationEstancadaPoblation);
+			//iterationEstancadaDelta=AutonomousSearchDelta(iterationEstancadaDelta);
 		}
 
 		// Crear excels con datos para grafico convergencia
 		
-		File excel = new File(directoryName);
+		/*File excel = new File(directoryName);
 		if(!excel.exists()){
 			Statistics.createConvergenciGraph(data.getIdentificator(), vector_fitness, directoryName);
-		}
+		}*/
 		return iterationOpt;
 		
 		// Descomentar para crear grafico java
@@ -174,12 +179,12 @@ public class FlowerPollination {
 		int CantIntEstan = 2;
 		int CantModoEstan = 2;
 		float step=0.05f; //cantidad de población que se añade
-		switch (modo){
+		switch (modoSwitch){
 		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability+step<=1f){ //aumentar el switch de probabilidad
 				switchProbability = switchProbability+step;	
 				}
 				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
-					modo=1;						 //Se cambia al modo de disminuir
+					modoSwitch=1;						 //Se cambia al modo de disminuir
 					iteraciones=0;
 				}
 								break;
@@ -187,7 +192,7 @@ public class FlowerPollination {
 			switchProbability = switchProbability-step;		
 			}
 			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
-				modo=0;						 //Se cambia al modo de disminuir
+				modoSwitch=0;						 //Se cambia al modo de aumentar
 				iteraciones=0;
 			}
 			
@@ -197,13 +202,42 @@ public class FlowerPollination {
 		return iteraciones;
 		
 	}
+	public int AutonomousSearchDelta(int iteraciones){
+		int CantIntEstan = 2;
+		int CantModoEstan = 5;
+		float step=0.1f; //Aumento del delta
+		switch (modoDelta){
+		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&delta+step<=1.9f){ //aumentar delta de probabilidad
+			delta = delta+step;	
+				}
+				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+					modoDelta=1;						 //Se cambia al modo de disminuir
+					iteraciones=0;
+				}
+								break;
+		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&delta-step>=0.1f){ //disminuir delta de probabilidad
+			delta = delta-step;		
+			}
+			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+				modoDelta=0;						 //Se cambia al modo de aumentar
+				iteraciones=0;
+			}
+			
+			break;
+		}
+	//	System.out.println("Iteracion estancada: "+iteraciones+" Delta: "+delta+" modo: ");
+		return iteraciones;
+		
+	}
+	
+	
 	
 	
 	public int AutonomousSearchPoblation(int iteraciones){
-		int CantIntEstan = 5;
-		int CantModoEstan = 5;
+		int CantIntEstan = 4;
+		int CantModoEstan = 3;
 		int step = 5;//cantidad de población que se añade
-		switch (modo){
+		switch (modoPoblation){
 		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan){ //aumentar la poblacion
 				//	System.out.println("Modo 0");
 					for(int i=0;i<step;i++){
@@ -211,7 +245,7 @@ public class FlowerPollination {
 					}
 				}
 				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
-					modo=1;						 //Se cambia al modo de disminuir
+					modoPoblation=1;						 //Se cambia al modo de disminuir
 					iteraciones=0;
 				}
 								break;
@@ -222,7 +256,7 @@ public class FlowerPollination {
 				}
 			}
 			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
-				modo=0;						 //Se cambia al modo de disminuir
+				modoPoblation=0;						 //Se cambia al modo de aumentar
 				iteraciones=0;
 			}
 			
@@ -364,9 +398,9 @@ public class FlowerPollination {
 	private void generarMovimiento(int tipoMovimiento, int poblacion) {
 		boolean constraintOK = false;
 		tempFitness = 0;
-
+		
 		if (tipoMovimiento == 1) {
-			while (constraintOK == false) {
+			while (constraintOK == false) {				
 				tempSolution = generarPasoLevy(tempSolution);
 				// Check constraint
 				MCDPModel boctorModel = new MCDPModel(data.A, data.M, data.P, data.C, data.mmax,
@@ -390,6 +424,7 @@ public class FlowerPollination {
 			}
 		}
 		if (tipoMovimiento == 2) {
+			
 			while (constraintOK == false) {
 				tempSolution = generarPasoLocal(tempSolution);
 				// Check constraint
@@ -577,7 +612,7 @@ public class FlowerPollination {
 		}
 
 		do {
-			step_levy = L.levy_step(1.5, 1);
+			step_levy = L.levy_step(delta, 1);
 		} while (Double.isNaN(step_levy));
 
 		for (int i = 0; i < data.M; i++) {
@@ -624,16 +659,15 @@ public class FlowerPollination {
 	private int aproximar(double movimiento) {
 		int aproximado = 0;
 		
-		aproximado = IntervalDiscretization.IntervalDoubleValue(SShaped.S4(movimiento), data.C, 0, 1)+1;
+		//aproximado = IntervalDiscretization.IntervalDoubleValue(SShaped.S4(movimiento), data.C, 0, 1)+1;
 		//System.out.println("VALOR MOVIMIENTO: ("+movimiento+") APROXIMADO("+aproximado+")");
-		/*
 		aproximado = Math.round((float) movimiento);
 		if (aproximado < 1) {
 			aproximado = 1;
 		} else if (aproximado > data.C) {
 			aproximado = data.C;
 		}
-		 */
+		 
 		return aproximado;
 	}
 
