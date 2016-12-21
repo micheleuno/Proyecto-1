@@ -1,6 +1,9 @@
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -23,7 +26,7 @@ public class Main {
 		// Crear parametros iniciales de la metaheuristica
 		int numberPoblation = 160;
 		int numberIteration = 100;
-		float delta = 1.5f;
+		float delta = 0.1f;
 		float switch_probability = 0.1f;
 		int executions = 31;
 		int best_fitness = 999999999;
@@ -32,13 +35,36 @@ public class Main {
 		int numIteracion = 0;
 		int iterationOpt = 0;
 		float iterationOptAvg = 0f;
-
+		String ParamAutonomous;
+		String parametros[];
+		File f = new File("Parametros.txt");
+		BufferedReader  br= null;
+		if(f.exists() && !f.isDirectory()) { 
+			 br = new BufferedReader(new InputStreamReader( new FileInputStream(f)));
+			parametros = (br.readLine().split("="));
+			numberIteration=Integer.parseInt(parametros[1]);
+			parametros = (br.readLine().split("="));
+			numberPoblation=Integer.parseInt(parametros[1]);
+			parametros = (br.readLine().split("="));
+			delta=Float.parseFloat(parametros[1]);
+			parametros = (br.readLine().split("="));
+			switch_probability=Float.parseFloat(parametros[1]);
+			parametros = (br.readLine().split("="));
+			executions=Integer.parseInt(parametros[1]);
+			br.readLine();
+			System.out.println("asdasdasdasd "+numberIteration);
+		}
+		
+			
+		
+		ParamAutonomous=br.readLine();//Lectura inicial parametros AS
+		while(ParamAutonomous!=null){ //While que lo controla la cantidad de pruebas
 		Logger log = Logger.getLogger(Main.class);
 
 		log.info("Read all filenames");
 		Benchmark benchmark = new Benchmark();
 		ArrayList<String> dataFiles = benchmark.readSetFileBenchmark("/resources/MCDP_BENCHMARK_FILES.txt");
-
+		
 		ArrayList<MCDPData> modelSet = benchmark.getSetModelsByNames(dataFiles);
 		System.out.println("Read all filenames");
 		Iterator<MCDPData> iterator = modelSet.iterator();
@@ -69,7 +95,7 @@ public class Main {
 		} else {
 			System.out.printf("Failed to create new directory: %s%n\n", directory);
 		}
-
+		
 		while (iterator.hasNext()) {
 
 			MCDPData model = iterator.next();
@@ -87,7 +113,7 @@ public class Main {
 				FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, model, delta,
 						switch_probability, directory);
 
-				iterationOpt = metaheuristic.run();
+				iterationOpt = metaheuristic.run(ParamAutonomous);
 				iterationOptAvg = iterationOpt + iterationOptAvg;
 				Solution bestSolution = metaheuristic.getBestSolution();
 				mean_fitness = mean_fitness + bestSolution.getFitness();
@@ -114,6 +140,9 @@ public class Main {
 			System.out.println("Process End: " + sdf.format(resultdate2));
 			System.out.println("==========================================================");
 		}
+		ParamAutonomous=br.readLine();
+		}
+		br.close();
 		Toolkit.getDefaultToolkit().beep();;
 	}
 
