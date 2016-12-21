@@ -1,5 +1,4 @@
 *.xls
-*.txt
 .classpath
 src/resources/MBO_MCDP_BENCHMARK_FILES--boctor.txt
 src/resources/MBO_MCDP_BENCHMARK_FILES--boctor.txt
