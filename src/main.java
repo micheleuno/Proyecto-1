@@ -35,6 +35,8 @@ public class Main {
 		int numIteracion = 0;
 		int iterationOpt = 0;
 		float iterationOptAvg = 0f;
+		long ejecutionTimeAvg = 0;
+		long tiempoInicio,tiempoFin = 0;
 		String ParamAutonomous;
 		String parametros[];
 		File f = new File("Parametros.txt");
@@ -59,6 +61,7 @@ public class Main {
 		
 		ParamAutonomous=br.readLine();//Lectura inicial parametros AS
 		while(ParamAutonomous!=null){ //While que lo controla la cantidad de pruebas
+			numIteracion=0;
 		Logger log = Logger.getLogger(Main.class);
 
 		log.info("Read all filenames");
@@ -73,7 +76,7 @@ public class Main {
 		String benchmarkFileConfig = "n_" + numberPoblation + "_d_" + delta + "_SWp_" + switch_probability + "_in_"
 				+ numberIteration + "";
 
-		String currentDirectory = timeStamp + "_" + benchmarkFileConfig;
+		String currentDirectory = timeStamp + "_" + benchmarkFileConfig+" "+ParamAutonomous;
 		String folder = "Results";
 		String directory = folder + "/" + currentDirectory;
 
@@ -112,21 +115,25 @@ public class Main {
 
 				FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, model, delta,
 						switch_probability, directory);
-
+				tiempoInicio=System.currentTimeMillis();
 				iterationOpt = metaheuristic.run(ParamAutonomous);
+				tiempoFin=System.currentTimeMillis();
+				
 				iterationOptAvg = iterationOpt + iterationOptAvg;
 				Solution bestSolution = metaheuristic.getBestSolution();
 				mean_fitness = mean_fitness + bestSolution.getFitness();
 				if (best_fitness > bestSolution.getFitness()) {
 					best_fitness = bestSolution.getFitness();
 				}
-
+				ejecutionTimeAvg=ejecutionTimeAvg+(tiempoFin-tiempoInicio);
+			
 			}
 			mean_fitness = mean_fitness / executions;
 			iterationOptAvg = iterationOptAvg / executions;
+			ejecutionTimeAvg = ejecutionTimeAvg / executions;
 			System.out.println("Mean Best Fitness:[" + mean_fitness + "] " + "Best Solution: [" + best_fitness + "]");
 			Statistics.createTable(numIteracion, model.mmax, model.getBestSGlobal(), best_fitness, mean_fitness,
-					model.getIdentificator(), currentDirectory,model.getC(),iterationOptAvg);
+					model.getIdentificator(), currentDirectory,model.getC(),iterationOptAvg,ejecutionTimeAvg);
 			mean_fitness = 0;
 			best_fitness = 999999999;
 			numIteracion++;

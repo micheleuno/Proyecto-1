@@ -57,7 +57,7 @@ public final class IntervalDiscretization
         for (interval = 0; interval < numberIntervals; interval++)
         {
             boolean inInterval = check(value, lowerBoundRange, tempRange + rangeNumber);
-
+            //System.out.println("["+lowerBoundRange+";"+(tempRange + rangeNumber)+"] Numero a discretizar: " +value);
             if (inInterval == true)
             {
                 return interval;

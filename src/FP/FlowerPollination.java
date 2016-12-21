@@ -33,7 +33,7 @@ public class FlowerPollination {
 	private int matrizSimilitud[][];
 	private int modoSwitch = 0; //variable Autonomous Search
 	private int modoPoblation = 0;
-	private int modoDelta = 1;
+	private int modoDelta = 0;
 	// Dataset (benchmark)
 	private MCDPData data;
 
@@ -120,7 +120,7 @@ public class FlowerPollination {
 				iterationEstancadaPoblation++;
 				iterationEstancadaDelta++;
 			}
-			iterationEstancadaSwitch=AutonomousSearchSwitch(iterationEstancadaSwitch,ParamAutonomous);//llamada a autonomous search
+			//iterationEstancadaSwitch=AutonomousSearchSwitch(iterationEstancadaSwitch,ParamAutonomous);//llamada a autonomous search
 			//iterationEstancadaPoblation=AutonomousSearchPoblation(iterationEstancadaPoblation,ParamAutonomous);
 			//iterationEstancadaDelta=AutonomousSearchDelta(iterationEstancadaDelta,ParamAutonomous);
 		}
@@ -172,10 +172,12 @@ public class FlowerPollination {
 		return iteraciones;
 		
 	}
-	public int AutonomousSearchDelta(int iteraciones){
-		int CantIntEstan = 2;
-		int CantModoEstan = 5;
-		float step=0.1f; //Aumento del delta
+	public int AutonomousSearchDelta(int iteraciones,String ParamAutonomous){
+		String parametros[];
+		parametros= ParamAutonomous.split("-");
+		int CantIntEstan = Integer.parseInt(parametros[0]);
+		int CantModoEstan = Integer.parseInt(parametros[1]);;
+		float step=Float.parseFloat(parametros[2]);
 		switch (modoDelta){
 		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&delta+step<=1.9f){ //aumentar delta de probabilidad
 			delta = delta+step;	
@@ -203,14 +205,16 @@ public class FlowerPollination {
 	
 	
 	
-	public int AutonomousSearchPoblation(int iteraciones){
-		int CantIntEstan = 5;
-		int CantModoEstan = 5;
-		int step = 15;//cantidad de población que se añade
+	public int AutonomousSearchPoblation(int iteraciones,String ParamAutonomous){
+		String parametros[];
+		parametros= ParamAutonomous.split("-");
+		int CantIntEstan = Integer.parseInt(parametros[0]);
+		int CantModoEstan = Integer.parseInt(parametros[1]);;
+		int step=Integer.parseInt(parametros[2]);//cantidad de población que se añade
 		switch (modoPoblation){
 		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan){ //aumentar la poblacion
 				//	System.out.println("Modo 0");
-					for(int i=0;i<step;i++){
+					for(	int i=0;i<step;i++){
 						addRandomSolutionToPoblation();	
 					}
 				}
@@ -219,7 +223,7 @@ public class FlowerPollination {
 					iteraciones=0;
 				}
 								break;
-		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan){ //disminuir la poblacion
+		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&poblation.size()>step){ //disminuir la poblacion
 			//System.out.println("Modo 1");
 				for(int i=0;i<step;i++){
 					deleteRandomSolutionToPoblation();	
@@ -232,7 +236,7 @@ public class FlowerPollination {
 			
 			break;
 		}
-		//System.out.println("Iteracion estancada: "+iteraciones+" switch: "+switchProbability+" modo: "+modo+" Poblacion: "+poblation.size()+" fitness: "+bestSolution.getFitness());
+		//System.out.println("Iteracion estancada: "+iteraciones+" switch: "+switchProbability+" modo: "+modoPoblation+" Poblacion: "+poblation.size()+" fitness: "+bestSolution.getFitness());
 		return iteraciones;
 		
 	}
@@ -629,15 +633,16 @@ public class FlowerPollination {
 	private int aproximar(double movimiento) {
 		int aproximado = 0;
 		
-		aproximado = IntervalDiscretization.IntervalDoubleValue(SShaped.S5(movimiento), data.C, 0, 1)+1;
-		System.out.println("VALOR MOVIMIENTO: ("+movimiento+") APROXIMADO("+aproximado+")"+"SShaped"+SShaped.S4(movimiento));
+		//aproximado = IntervalDiscretization.IntervalDoubleValue(VShaped.V1(movimiento), data.C, 0, 1)+1;
+		//System.out.println("VALOR MOVIMIENTO: ("+movimiento+") APROXIMADO("+aproximado+")"+"SShaped"+VShaped.V1(movimiento));
+		//System.out.println("Aproximado con vshape: "+aproximado);
 		aproximado = Math.round((float) movimiento);
 		if (aproximado < 1) {
 			aproximado = 1;
 		} else if (aproximado > data.C) {
 			aproximado = data.C;
 		}
-		 
+		//System.out.println("Aproximado con aproximar: "+aproximado);
 		return aproximado;
 	}
 

@@ -47,7 +47,8 @@ public class Statistics {
 	}
 
 	public static void createTable(int fila, int mmax, int bestGlobal, int bestFitness, float meanFitness,
-			String nProblema, String directoryName, int numCell, float iterationOptAvg) {
+			String nProblema, String directoryName, int numCell, float iterationOptAvg,long averageTime) {
+		System.out.println(directoryName);
 		try {
 			String dato[] = nProblema.split("_");
 			String num_problema = dato[2].substring(dato[2].length() - 2);
@@ -85,6 +86,8 @@ public class Statistics {
 				cell.setCellValue(RPD);
 				cell = row.createCell(8);
 				cell.setCellValue(iterationOptAvg);
+				cell = row.createCell(9);
+				cell.setCellValue(averageTime);
 
 				FileOutputStream out = new FileOutputStream(new File("Sumary [" + directoryName + "].xls"));
 				workbook.write(out);
@@ -117,6 +120,8 @@ public class Statistics {
 				cell.setCellValue("RPD");
 				cell = row.createCell(8);
 				cell.setCellValue("Iteration");
+				cell = row.createCell(9);
+				cell.setCellValue("Time (ms)");
 
 				row = sheet.createRow(fila + 1);
 
@@ -138,6 +143,8 @@ public class Statistics {
 				cell.setCellValue(RPD);
 				cell = row.createCell(8);
 				cell.setCellValue(iterationOptAvg);
+				cell = row.createCell(9);
+				cell.setCellValue(averageTime);
 				
 				FileOutputStream out = new FileOutputStream(new File("Sumary [" + directoryName + "].xls"));
 				workbook.write(out);
