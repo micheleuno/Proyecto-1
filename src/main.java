@@ -1,4 +1,4 @@
-import java.awt.Toolkit;
+import java.awt.		Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +33,7 @@ public class Main {
 		float mean_fitness = 0f;
 		int optimal_global = 0;
 		int numIteracion = 0;
-		int iterationOpt = 0;
+		double[] variables = new double[3];
 		float iterationOptAvg = 0f;
 		long ejecutionTimeAvg = 0;
 		long tiempoInicio,tiempoFin = 0;
@@ -97,7 +97,7 @@ public class Main {
 			System.out.printf("Successfully created new directory: %s%n\n", directory);
 		} else {
 			System.out.printf("Failed to create new directory: %s%n\n", directory);
-		}
+		}	
 		
 		while (iterator.hasNext()) {
 
@@ -116,10 +116,10 @@ public class Main {
 				FlowerPollination metaheuristic = new FlowerPollination(numberPoblation, numberIteration, model, delta,
 						switch_probability, directory);
 				tiempoInicio=System.currentTimeMillis();
-				iterationOpt = metaheuristic.run(ParamAutonomous);
+				variables = metaheuristic.run(ParamAutonomous,i,executions);
 				tiempoFin=System.currentTimeMillis();
 				
-				iterationOptAvg = iterationOpt + iterationOptAvg;
+				iterationOptAvg = (float) (variables[0] + iterationOptAvg);
 				Solution bestSolution = metaheuristic.getBestSolution();
 				mean_fitness = mean_fitness + bestSolution.getFitness();
 				if (best_fitness > bestSolution.getFitness()) {
@@ -133,7 +133,7 @@ public class Main {
 			ejecutionTimeAvg = ejecutionTimeAvg / executions;
 			System.out.println("Mean Best Fitness:[" + mean_fitness + "] " + "Best Solution: [" + best_fitness + "]");
 			Statistics.createTable(numIteracion, model.mmax, model.getBestSGlobal(), best_fitness, mean_fitness,
-					model.getIdentificator(), currentDirectory,model.getC(),iterationOptAvg,ejecutionTimeAvg);
+					model.getIdentificator(), currentDirectory,model.getC(),iterationOptAvg,ejecutionTimeAvg,variables,model.M,model.P);
 			mean_fitness = 0;
 			best_fitness = 999999999;
 			numIteracion++;

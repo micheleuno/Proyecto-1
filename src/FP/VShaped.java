@@ -52,6 +52,53 @@ public final class VShaped
     {
         return Math.abs( (2/Math.PI) * Math.atan( (Math.PI/2) * x));
     }
+    
+    
+    
+    
+    // V5
+    public static double V5(float x)
+    {
+        return Math.abs(Erf.erf( (Math.sqrt(Math.PI)/2) * x-2.015));
+    }
+
+    public static double V5(double x)
+    {
+        return Math.abs(Erf.erf( (Math.sqrt(Math.PI)/2) * x-2.015));
+    }
+
+    // V2
+    public static double V6(float x)
+    {
+        return Math.abs( Math.tanh(x-2.015) );
+    }
+
+    public static double V6(double x)
+    {
+        return Math.abs( Math.tanh(x-2.015) );
+    }
+
+    // V3
+    public static double V7(float x)
+    {
+        return Math.abs( x-2.015 / Math.sqrt(1 + Math.pow(x-2.015, 2)));
+    }
+
+    public static double V7(double x)
+    {
+        return Math.abs( x-2.015 / Math.sqrt(1 + Math.pow(x-2.015, 2)));
+    }
+
+    // V4
+    public static double V8(float x)
+    {
+        return Math.abs( (2/Math.PI) * Math.atan( (Math.PI/2) * x-2.015));
+    }
+
+    public static double V8(double x)
+    {
+        return Math.abs( (2/Math.PI) * Math.atan( (Math.PI/2) * x-2.015));
+    }
 
     public static void main(String[] args)
     {

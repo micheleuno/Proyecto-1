@@ -55,7 +55,71 @@ public final class SShaped
     {
         TCATest();
     }
+    //S5
+    public static double S5(float x)
+    {
+        return 1/(1 + Math.pow(Math.E, (-2 * (x-2.015))));
+    }
+    
+    public static double S5(double x)
+    {
+        return 1/(1 + Math.pow(Math.E, (-2 * (x-2.015))));
+    }
+    // S6
+    public static double S6(float x)
+    {
+        return 1/(1 + Math.pow(Math.E, (-1 * x-2.015)));
+    }
 
+    public static double S6(double x)
+    {
+        return 1/(1 + Math.pow(Math.E, (-1 * x-2.015)));
+    }
+
+    // S7
+    public static double S7(float x)
+    {
+        return 1/(1 + Math.pow(Math.E, ((-1 * x-2.015)/2) ));
+    }
+
+    public static double S7(double x)
+    {
+        return 1/(1 + Math.pow(Math.E, ((-1 * x-2.015)/2) ));
+    }
+
+    // S8
+    public static double S8(float x)
+    {
+        return 1/(1 + Math.pow(Math.E, ((-1 * x-2.015)/3) ));
+    }
+
+    public static double S8(double x)
+    {
+        return 1/(1 + Math.pow(Math.E, ((-1 * x-2.015)/3) ));
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public static void TCATest()
     {
         final double[] a = new double[]

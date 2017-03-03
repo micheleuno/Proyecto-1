@@ -25,7 +25,8 @@ public class FlowerPollination {
 	private ArrayList<Solution> poblation; // Un arreglo de soluciones
 	private Solution bestSolution, tempSolution; // Mejor Solucion
 	int tempFitness = 0;
-	
+	private int cont =0;
+	private double promedio = 0f;
 	int backFitness=0;
 	int iterationAutonomousSearch=5;
 	int poblationIncrease=5;
@@ -33,7 +34,9 @@ public class FlowerPollination {
 	private int matrizSimilitud[][];
 	private int modoSwitch = 0; //variable Autonomous Search
 	private int modoPoblation = 0;
-	private int modoDelta = 0;
+	private int modoDelta = 1;
+	private double varMin = 9999f;
+	private double varMax = 0f;
 	// Dataset (benchmark)
 	private MCDPData data;
 
@@ -61,7 +64,8 @@ public class FlowerPollination {
 		this.directoryName = directory;
 	}
 
-	public int run(String ParamAutonomous) {
+	public double[] run(String ParamAutonomous, int ejecucion, int ejecuciones) {
+		//System.out.println("Delta Inicial "+delta);
 		matrizSimilitud = new int[data.M][data.M];
 		calcularSimilitudMaquinas();
 		generateInitialPoblation();
@@ -70,7 +74,7 @@ public class FlowerPollination {
 		int iteration = 0;
 		int iterationOpt = 0;
 		int optimo = 9999999;
-
+		double[] var = new double[3];
 		int iterationEstancadaPoblation = 0;
 		int iterationEstancadaSwitch = 0;
 		int iterationEstancadaDelta = 0;
@@ -116,22 +120,29 @@ public class FlowerPollination {
 				iterationEstancadaSwitch = iterationEstancadaPoblation=iterationEstancadaDelta=0;
 				
 			}else{
-				iterationEstancadaSwitch++;
+				iterationEstancadaSwitch++;	
 				iterationEstancadaPoblation++;
 				iterationEstancadaDelta++;
 			}
 			//iterationEstancadaSwitch=AutonomousSearchSwitch(iterationEstancadaSwitch,ParamAutonomous);//llamada a autonomous search
-			//iterationEstancadaPoblation=AutonomousSearchPoblation(iterationEstancadaPoblation,ParamAutonomous);
-			//iterationEstancadaDelta=AutonomousSearchDelta(iterationEstancadaDelta,ParamAutonomous);
+		//iterationEstancadaPoblation=AutonomousSearchPoblation(iterationEstancadaPoblation,ParamAutonomous);
+			
+			//System.out.println(poblation.size());
+	iterationEstancadaDelta=AutonomousSearchDelta(iterationEstancadaDelta,ParamAutonomous);	
+//	System.out.println(delta+"  iterationEstancadaDelta: "+iterationEstancadaDelta+" fitness "+  bestSolution.getFitness());
 		}
-
+		//System.out.println(promedio/cont);
 		// Crear excels con datos para grafico convergencia
 		
-		/*File excel = new File(directoryName);
-		if(!excel.exists()){
-			Statistics.createConvergenciGraph(data.getIdentificator(), vector_fitness, directoryName);
-		}*/
-		return iterationOpt;
+		//File excel = new File(directoryName);
+		//if(!excel.exists()){
+		//Statistics.createConvergenciGraph(data.getIdentificator(), vector_fitness, directoryName,ejecucion,ejecuciones);
+	//	}
+		var[0]=iterationOpt;
+		var[1]=varMin;
+		var[2]=varMax;
+		//System.out.println("VarMin "+varMin+" VarMax "+varMax);
+		return var;	
 		
 		// Descomentar para crear grafico java
 		/*
@@ -148,18 +159,23 @@ public class FlowerPollination {
 		parametros= ParamAutonomous.split("-");
 		int CantIntEstan = Integer.parseInt(parametros[0]);
 		int CantModoEstan = Integer.parseInt(parametros[1]);;
-		float step=Float.parseFloat(parametros[2]); //cantidad de población que se añade
+		float step= Float.parseFloat(parametros[2]); //cantidad de población que se añade
+		//System.out.println("Iteracion estancada: "+CantIntEstan+" CantModoEstan: "+CantModoEstan+" step: "+step);
 		switch (modoSwitch){
 		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability+step<=1f){ //aumentar el switch de probabilidad
 				switchProbability = switchProbability+step;	
+				if(switchProbability>varMax)
+					varMax=switchProbability;
 				}
 				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
 					modoSwitch=1;						 //Se cambia al modo de disminuir
 					iteraciones=0;
 				}
 								break;
-		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability-step>=0.1f){ //disminuir el switch de probabilidad
-			switchProbability = switchProbability-step;		
+		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&switchProbability-step>0f){ //disminuir el switch de probabilidad
+			switchProbability = switchProbability-step;	
+			if(switchProbability<varMin)
+				varMin=switchProbability;
 			}
 			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
 				modoSwitch=0;						 //Se cambia al modo de aumentar
@@ -176,21 +192,29 @@ public class FlowerPollination {
 		String parametros[];
 		parametros= ParamAutonomous.split("-");
 		int CantIntEstan = Integer.parseInt(parametros[0]);
-		int CantModoEstan = Integer.parseInt(parametros[1]);;
-		float step=Float.parseFloat(parametros[2]);
+		int CantModoEstan = Integer.parseInt(parametros[1]);
+		double step=Double.parseDouble(parametros[2]);
+		//System.out.println("entra 	"+delta);
 		switch (modoDelta){
-		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&delta+step<=1.9f){ //aumentar delta de probabilidad
+		case 0: 
+			if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&delta+step<=1.51f){ //aumentar delta de probabilidad
 			delta = delta+step;	
+			//System.out.println("modo 1 "+"Delta:" +delta+" varmax: "+ delta);
+			if(delta>varMax)
+				varMax=delta;
 				}
-				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+				if(iteraciones>CantModoEstan){ //Si van dos aumentos y aun no mejora
 					modoDelta=1;						 //Se cambia al modo de disminuir
 					iteraciones=0;
 				}
 								break;
-		case 1: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&delta-step>=0.1f){ //disminuir delta de probabilidad
+		case 1: if(iteraciones>=CantIntEstan&&delta-step>=0.099f){ //disminuir delta de probabilidad
 			delta = delta-step;		
+		//	System.out.println("modo 2 "+"Delta:" +delta+" varmax: "+ delta);
+			if(delta<varMin)
+				varMin=delta;
 			}
-			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+			if(iteraciones>CantModoEstan){ //Si van dos aumentos y aun no mejora
 				modoDelta=0;						 //Se cambia al modo de aumentar
 				iteraciones=0;
 			}
@@ -212,13 +236,15 @@ public class FlowerPollination {
 		int CantModoEstan = Integer.parseInt(parametros[1]);;
 		int step=Integer.parseInt(parametros[2]);//cantidad de población que se añade
 		switch (modoPoblation){
-		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan){ //aumentar la poblacion
+		case 0: if(iteraciones%CantIntEstan==0&&iteraciones>=CantIntEstan&&poblation.size()<=150){ //aumentar la poblacion
 				//	System.out.println("Modo 0");
 					for(	int i=0;i<step;i++){
 						addRandomSolutionToPoblation();	
 					}
+					if(poblation.size()>varMax)
+						varMax=poblation.size();
 				}
-				if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+				if(iteraciones>CantModoEstan){ //Si van dos aumentos y aun no mejora
 					modoPoblation=1;						 //Se cambia al modo de disminuir
 					iteraciones=0;
 				}
@@ -228,8 +254,10 @@ public class FlowerPollination {
 				for(int i=0;i<step;i++){
 					deleteRandomSolutionToPoblation();	
 				}
+				if(poblation.size()<varMin)
+					varMin=poblation.size();
 			}
-			if(iteraciones>CantIntEstan*CantModoEstan){ //Si van dos aumentos y aun no mejora
+			if(iteraciones>CantModoEstan){ //Si van dos aumentos y aun no mejora
 				modoPoblation=0;						 //Se cambia al modo de aumentar
 				iteraciones=0;
 			}
@@ -632,8 +660,10 @@ public class FlowerPollination {
 
 	private int aproximar(double movimiento) {
 		int aproximado = 0;
+		promedio=promedio+movimiento;
+		cont++;
 		
-		//aproximado = IntervalDiscretization.IntervalDoubleValue(VShaped.V1(movimiento), data.C, 0, 1)+1;
+		//aproximado = IntervalDiscretization.IntervalDoubleValue(SShaped.S5(movimiento), data.C, 0, 1)+1;
 		//System.out.println("VALOR MOVIMIENTO: ("+movimiento+") APROXIMADO("+aproximado+")"+"SShaped"+VShaped.V1(movimiento));
 		//System.out.println("Aproximado con vshape: "+aproximado);
 		aproximado = Math.round((float) movimiento);
@@ -642,7 +672,7 @@ public class FlowerPollination {
 		} else if (aproximado > data.C) {
 			aproximado = data.C;
 		}
-		//System.out.println("Aproximado con aproximar: "+aproximado);
+	//System.out.println("movimiento: "+movimiento+"Aproximado con aproximar: "+aproximado);*/
 		return aproximado;
 	}
 
